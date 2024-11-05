@@ -1,0 +1,17 @@
+{
+  "name": "com.rabear.rcore.sub",
+  "version": "1.0.0",
+  "displayName": "RCore.Sub",
+  "description": "",
+  "unity": "2022.3",
+  "author": {
+    "name": "HungNB",
+    "email": "nbhung71711@gmail.com",
+    "url": "https://github.com/hnb-rabear"
+  },
+  "dependencies": {
+    "com.rabear.rcore.main": "https://github.com/hnb-rabear/RCore.git?path=Assets/RCore/Main",
+    "com.unity.addressables": "1.21.21",
+    "com.unity.textmeshpro": "3.0.9"
+  }
+}
