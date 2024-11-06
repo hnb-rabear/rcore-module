@@ -43,7 +43,6 @@ namespace RCore.SheetX
 		public bool encryptJson;
 		public string langCharSets;
 		public string persistentFields;
-		public string excludedSheets;
 		public string googleClientId;
 		public string googleClientSecret;
 		public string encryptionKey;
@@ -78,8 +77,6 @@ namespace RCore.SheetX
 
 		public void ResetToDefault()
 		{
-			excelSheetsPath = new ExcelSheetsPath();
-			excelSheetsPaths = new List<ExcelSheetsPath>();
 			jsonOutputFolder = "";
 			constantsOutputFolder = "";
 			localizationOutputFolder = "";
@@ -92,7 +89,6 @@ namespace RCore.SheetX
 			encryptJson = false;
 			langCharSets = "japan, korean, chinese";
 			persistentFields = "id, key";
-			excludedSheets = "";
 			googleClientId = "";
 			googleClientSecret = "";
 			encryptionKey =
