@@ -1,6 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using Google.Apis.Services;
+using Google.Apis.Sheets.v4;
+using Google.Apis.Sheets.v4.Data;
 using Newtonsoft.Json;
 using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
@@ -78,6 +81,7 @@ namespace RCore.SheetX
 	[Serializable]
 	public class GoogleSheetsPath : IComparable<GoogleSheetsPath>
 	{
+		public bool selected = true;
 		public string id;
 		public string name;
 		public List<SheetPath> sheets = new List<SheetPath>();

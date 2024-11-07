@@ -31,6 +31,7 @@ namespace RCore.SheetX
 		public ExcelSheetsPath excelSheetsPath;
 		public GoogleSheetsPath googleSheetsPath;
 		public List<ExcelSheetsPath> excelSheetsPaths;
+		public List<GoogleSheetsPath> googleSheetsPaths;
 		public string jsonOutputFolder;
 		public string constantsOutputFolder;
 		public string localizationOutputFolder;
@@ -59,10 +60,11 @@ namespace RCore.SheetX
 			return collection;
 		}
 
-		public string GetLocalizationFolder()
+		public string GetLocalizationFolder(out bool isAddressableAsset)
 		{
 			string path = localizationOutputFolder;
 			string resourcesDirName = "Resources";
+			isAddressableAsset = false;
 
 			// Find the index of the Resources directory
 			int resourcesIndex = path.IndexOf(resourcesDirName, StringComparison.OrdinalIgnoreCase);
@@ -72,7 +74,8 @@ namespace RCore.SheetX
 				string pathAfterResources = path.Substring(startAfterResources).TrimStart(System.IO.Path.DirectorySeparatorChar);
 				return pathAfterResources;
 			}
-			return string.Empty;
+			isAddressableAsset = true;
+			return "Localizations";
 		}
 
 		public void ResetToDefault()
@@ -106,14 +109,6 @@ namespace RCore.SheetX
 		{
 			m_encryption ??= SheetXHelper.CreateEncryption(encryptionKey);
 			return m_encryption ?? Encryption.Singleton;
-		}
-
-		public string GetSaveDirectory()
-		{
-			var path = Path.Combine(Application.dataPath, "Editor");
-			if (!Directory.Exists(path))
-				Directory.CreateDirectory(path);
-			return path;
 		}
 
 		public void CreateFileIDs(string exportFileName, string content)

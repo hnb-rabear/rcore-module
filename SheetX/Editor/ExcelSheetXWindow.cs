@@ -14,15 +14,14 @@ namespace RCore.SheetX
 		private Vector2 m_scrollPosition;
 		private SheetXSettings m_settings;
 		private ExcelSheetHandler m_excelSheetHandler;
-		private EditorTableView<ExcelSheetsPath> m_tableExcelFiles;
-		private EditorTableView<SheetPath> m_tableSpreadSheet;
+		private EditorTableView<SheetPath> m_tableSheets;
+		private EditorTableView<ExcelSheetsPath> m_tableExcelSheetsPaths;
 		private IWorkbook m_workbook;
 
 		private void OnEnable()
 		{
 			m_settings = SheetXSettings.Load();
 			m_excelSheetHandler = new ExcelSheetHandler(m_settings);
-
 		}
 
 		private void OnGUI()
@@ -46,11 +45,20 @@ namespace RCore.SheetX
 			GUILayout.EndScrollView();
 		}
 
-		private bool ValidateExcelPath(string path)
+		private bool ValidateExcelPath(string path, out string status)
 		{
 			string extension = Path.GetExtension(path)?.ToLower();
-			if (extension != ".xlsx" || !File.Exists(path))
+			if (extension != ".xlsx")
+			{
+				status = "Not Excel";
 				return false;
+			}
+			if (!File.Exists(path))
+			{
+				status = "Not found";
+				return false;
+			}
+			status = "Good";
 			return true;
 		}
 
@@ -58,11 +66,14 @@ namespace RCore.SheetX
 		{
 			GUILayout.BeginHorizontal();
 			m_settings.excelSheetsPath.path = EditorHelper.TextField(m_settings.excelSheetsPath.path, "Excel File", 100);
-			bool validExcelPath = ValidateExcelPath(m_settings.excelSheetsPath.path);
-			if (validExcelPath)
-				EditorHelper.LabelField("Good", 50, false, TextAnchor.MiddleCenter, Color.green);
-			else
-				EditorHelper.LabelField("Bad", 50, false, TextAnchor.MiddleCenter, Color.red);
+			if (!string.IsNullOrEmpty(m_settings.excelSheetsPath.path))
+			{
+				bool validExcelPath = ValidateExcelPath(m_settings.excelSheetsPath.path, out string status);
+				if (validExcelPath)
+					EditorHelper.LabelField(status, 50, false, TextAnchor.MiddleCenter, Color.green);
+				else
+					EditorHelper.LabelField(status, 50, false, TextAnchor.MiddleCenter, Color.red);
+			}
 			if (EditorHelper.Button("Select File", 100))
 			{
 				string directory = string.IsNullOrEmpty(m_settings.excelSheetsPath.path) ? null : Path.GetDirectoryName(m_settings.excelSheetsPath.path);
@@ -76,10 +87,10 @@ namespace RCore.SheetX
 			GUILayout.EndHorizontal();
 			//-----
 			GUILayout.BeginHorizontal();
-			m_tableSpreadSheet ??= SheetXHelper.CreateSpreadsheetTable(this);
-			m_tableSpreadSheet.viewWidthFillRatio = 0.8f;
-			m_tableSpreadSheet.viewHeight = 250f;
-			m_tableSpreadSheet.DrawOnGUI(m_settings.excelSheetsPath.sheets);
+			m_tableSheets ??= SheetXHelper.CreateSpreadsheetTable(this);
+			m_tableSheets.viewWidthFillRatio = 0.8f;
+			m_tableSheets.viewHeight = 250f;
+			m_tableSheets.DrawOnGUI(m_settings.excelSheetsPath.sheets);
 
 			var style = new GUIStyle(EditorStyles.helpBox);
 			style.fixedWidth = position.width * 0.2f - 7;
@@ -87,7 +98,7 @@ namespace RCore.SheetX
 			EditorGUILayout.BeginVertical(style);
 			if (EditorHelper.Button("Reload"))
 			{
-				if (ValidateExcelPath(m_settings.excelSheetsPath.path))
+				if (ValidateExcelPath(m_settings.excelSheetsPath.path, out _))
 					m_settings.excelSheetsPath.Load();
 			}
 			if (EditorHelper.Button("Export All", pHeight: 40))
@@ -109,9 +120,9 @@ namespace RCore.SheetX
 		private void PageMultiFiles()
 		{
 			GUILayout.BeginHorizontal();
-			if (EditorHelper.Button("Add Excel Files", pWidth: 200, pHeight: 30))
+			if (EditorHelper.Button("Add Excel SpreadSheets", pWidth: 200, pHeight: 30))
 			{
-				var paths = EditorHelper.OpenFilePanelWithFilters("Select Excel Files", new[] { "Excel", "xlsx" });
+				var paths = EditorHelper.OpenFilePanelWithFilters("Select Excel SpreadSheets", new[] { "Excel", "xlsx" });
 				for (int i = 0; i < paths.Count; i++)
 				{
 					if (paths[i].StartsWith(Application.dataPath))
@@ -124,12 +135,12 @@ namespace RCore.SheetX
 				m_excelSheetHandler.ExportExcelsAll();
 			GUILayout.EndHorizontal();
 			GUILayout.Space(10);
-			m_tableExcelFiles ??= CreateExcelTable();
-			m_tableExcelFiles.DrawOnGUI(m_settings.excelSheetsPaths);
+			m_tableExcelSheetsPaths ??= CreateTableExcelSheetsPaths();
+			m_tableExcelSheetsPaths.DrawOnGUI(m_settings.excelSheetsPaths);
 
 		}
 
-		private EditorTableView<ExcelSheetsPath> CreateExcelTable()
+		private EditorTableView<ExcelSheetsPath> CreateTableExcelSheetsPaths()
 		{
 			var table = new EditorTableView<ExcelSheetsPath>(this, "Excel files");
 			var labelGUIStyle = new GUIStyle(GUI.skin.label)
@@ -143,11 +154,12 @@ namespace RCore.SheetX
 					textColor = Color.gray
 				}
 			};
+			
 			table.AddColumn("Selected", 70, 90, (rect, item) =>
 			{
 				rect.xMin += 10;
 				item.selected = EditorGUI.Toggle(rect, item.selected);
-			}).SetAutoResize(true);
+			});
 
 			table.AddColumn("Excel Path", 300, 0, (rect, item) =>
 			{
@@ -157,7 +169,7 @@ namespace RCore.SheetX
 					text: item.path,
 					style: style
 				);
-			}).SetAutoResize(true).SetSorting((a, b) => String.Compare(a.path, b.path, StringComparison.Ordinal));
+			}).SetSorting((a, b) => String.Compare(a.path, b.path, StringComparison.Ordinal));
 
 			table.AddColumn("Status", 80, 100, (rect, item) =>
 			{
@@ -166,24 +178,13 @@ namespace RCore.SheetX
 				string status = "";
 				if (!string.IsNullOrEmpty(item.path))
 				{
-					string extension = Path.GetExtension(item.path)?.ToLower();
-					bool fileExists = File.Exists(item.path);
-					bool valid = extension == ".xlsx" && fileExists;
-					if (valid)
-					{
-						status = "Good";
-						color = Color.green;
-					}
-					else
-					{
-						status = fileExists ? "File not found" : "File is invalid";
-						color = Color.red;
-					}
+					ValidateExcelPath(item.path, out status);
+					color = status == "Good" ? Color.green : Color.red;
 				}
 				GUI.contentColor = color;
 				GUI.Label(rect, status);
 				GUI.contentColor = defaultColor;
-			}).SetAutoResize(true);
+			});
 
 			table.AddColumn("Ping", 50, 70, (rect, item) =>
 			{
@@ -198,16 +199,16 @@ namespace RCore.SheetX
 						Process.Start(psi);
 					}
 				}
-			}).SetAutoResize(true);
+			});
 
 			table.AddColumn("Edit", 50, 70, (rect, item) =>
 			{
 				if (GUI.Button(rect, "Edit"))
 				{
 					item.Load();
-					EditSheetsWindow.ShowWindow(item, result => { });
+					EditExcelSheetsWindow.ShowWindow(item);
 				}
-			}).SetAutoResize(true).SetTooltip("Click to Edit");
+			}).SetTooltip("Click to Edit");
 
 			table.AddColumn("Delete", 60, 80, (rect, item) =>
 			{
@@ -218,7 +219,7 @@ namespace RCore.SheetX
 					m_settings.excelSheetsPaths.Remove(item);
 				}
 				GUI.backgroundColor = defaultColor;
-			}).SetAutoResize(true).SetTooltip("Click to Delete");
+			}).SetTooltip("Click to Delete");
 
 			return table;
 		}
