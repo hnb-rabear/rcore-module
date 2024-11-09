@@ -2,11 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using RCore.Editor;
 using UnityEditor;
 using UnityEngine;
 
-namespace RCore.SheetX
+namespace RCore.Editor.SheetX
 {
 	public static class SheetXConstants
 	{
@@ -41,12 +40,12 @@ namespace RCore.SheetX
 		public bool separateLocalizations;
 		public bool combineJson;
 		public bool onlyEnumAsIDs;
-		public bool encryptJson;
+		[HideInInspector] public bool encryptJson;
 		public string langCharSets;
 		public string persistentFields;
 		public string googleClientId;
 		public string googleClientSecret;
-		public string encryptionKey;
+		[HideInInspector] public string encryptionKey;
 		private Encryption m_encryption;
 
 		public static SheetXSettings Load()
@@ -121,7 +120,7 @@ namespace RCore.SheetX
 			SheetXHelper.WriteFile(constantsOutputFolder, $"{exportFileName}.cs", fileContent);
 			UnityEngine.Debug.Log($"Exported {exportFileName}.cs!");
 		}
-		
+
 		public void CreateFileConstants(string pContent, string pExportFileName)
 		{
 			string fileContent = Resources.Load<TextAsset>(SheetXConstants.CONSTANTS_CS_TEMPLATE).text;
@@ -149,6 +148,54 @@ namespace RCore.SheetX
 			};
 			newPath.Load();
 			excelSheetsPaths.Add(newPath);
+		}
+
+		private string m_obfGoogleClientId;
+		public string ObfGoogleClientId
+		{
+			get
+			{
+				try
+				{
+					m_obfGoogleClientId = GetEncryption().Decrypt(googleClientId);
+				}
+				catch
+				{
+					m_obfGoogleClientId = "";
+				}
+				return m_obfGoogleClientId;
+			}
+			set
+			{
+				if (value == m_obfGoogleClientId)
+					return;
+				m_obfGoogleClientId = value;
+				googleClientId = string.IsNullOrEmpty(value) ? "" : GetEncryption().Encrypt(value);
+			}
+		}
+
+		private string m_obfGoogleClientSecret;
+		public string ObfGoogleClientSecret
+		{
+			get
+			{
+				try
+				{
+					m_obfGoogleClientSecret = GetEncryption().Decrypt(googleClientSecret);
+				}
+				catch
+				{
+					m_obfGoogleClientSecret = "";
+				}
+				return m_obfGoogleClientSecret;
+			}
+			set
+			{
+				if (value == m_obfGoogleClientSecret)
+					return;
+				m_obfGoogleClientSecret = value;
+				googleClientSecret = string.IsNullOrEmpty(value) ? "" : GetEncryption().Encrypt(value);
+			}
 		}
 	}
 }

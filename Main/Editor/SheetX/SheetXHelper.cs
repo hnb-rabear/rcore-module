@@ -12,13 +12,12 @@ using System.Text;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NPOI.SS.UserModel;
-using RCore.Editor;
 using System.Threading;
 using UnityEditor;
 using UnityEngine;
 using Color = UnityEngine.Color;
 
-namespace RCore.SheetX
+namespace RCore.Editor.SheetX
 {
 	public class SheetXHelper : MonoBehaviour
 	{
@@ -509,9 +508,22 @@ namespace RCore.SheetX
 			return table;
 		}
 
-#region Google Spreadsheets
-
-		public static string GetSaveDirectory()
+		public static Dictionary<string, string> GenerateLangCharSets(Dictionary<string, string> pCharacterMaps)
+		{
+			var output = new Dictionary<string, string>();
+			foreach (var map in pCharacterMaps)
+			{
+				string combinedStr = "";
+				var unique = new HashSet<char>(map.Value);
+				foreach (char c in unique)
+					combinedStr += c;
+				combinedStr = string.Concat(combinedStr.OrderBy(c => c));
+				output.Add(map.Key, combinedStr);
+			}
+			return output;
+		}
+		
+				public static string GetSaveDirectory()
 		{
 			var path = Path.Combine(Application.dataPath, "Editor");
 			if (!Directory.Exists(path))
@@ -604,8 +616,6 @@ namespace RCore.SheetX
 			UnityEngine.Debug.Log("Credential file saved to: " + GetSaveDirectory());
 			return credential;
 		}
-
-#endregion
 	}
 
 	public static class SheetXExtension

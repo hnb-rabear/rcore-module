@@ -1,14 +1,13 @@
-using RCore.Editor;
 using UnityEditor;
 using UnityEngine;
 
-namespace RCore.SheetX
+namespace RCore.Editor.SheetX
 {
 	public class SheetXSettingsWindow : EditorWindow
 	{
 		private Vector2 m_scrollPosition;
 		private SheetXSettings m_sheetXSettings;
-
+		
 		private void OnEnable()
 		{
 			m_sheetXSettings = SheetXSettings.Load();
@@ -28,8 +27,9 @@ namespace RCore.SheetX
 			m_sheetXSettings.combineJson = EditorHelper.Toggle(m_sheetXSettings.combineJson, "Combine Json Sheets", 200);
 			m_sheetXSettings.langCharSets = EditorHelper.TextField(m_sheetXSettings.langCharSets, "Lang char sets", 200);
 			m_sheetXSettings.persistentFields = EditorHelper.TextField(m_sheetXSettings.persistentFields, "Persistent fields", 200);
-			m_sheetXSettings.googleClientId = EditorHelper.TextField(m_sheetXSettings.googleClientId, "Google client id", 200);
-			m_sheetXSettings.googleClientSecret = EditorHelper.TextField(m_sheetXSettings.googleClientSecret, "Google client secret", 200);
+			m_sheetXSettings.ObfGoogleClientId = EditorHelper.TextField(m_sheetXSettings.ObfGoogleClientId, "Google client id", 200);
+			m_sheetXSettings.ObfGoogleClientSecret = EditorHelper.TextField(m_sheetXSettings.ObfGoogleClientSecret, "Google client secret", 200);
+			
 			GUILayout.EndVertical();
 			if (EditorGUI.EndChangeCheck())
 				EditorUtility.SetDirty(m_sheetXSettings);

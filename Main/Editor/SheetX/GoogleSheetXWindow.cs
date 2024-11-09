@@ -1,10 +1,9 @@
 using System;
 using System.Diagnostics;
-using RCore.Editor;
 using UnityEditor;
 using UnityEngine;
 
-namespace RCore.SheetX
+namespace RCore.Editor.SheetX
 {
 	public class GoogleSheetXWindow : EditorWindow
 	{
@@ -62,7 +61,7 @@ namespace RCore.SheetX
 				}
 				GUILayout.EndVertical();
 				if (EditorHelper.Button("Download", pHeight: 41))
-					SheetXHelper.DownloadGoogleSheet(m_settings.googleClientId, m_settings.googleClientSecret, m_settings.googleSheetsPath);
+					SheetXHelper.DownloadGoogleSheet(m_settings.ObfGoogleClientId, m_settings.ObfGoogleClientSecret, m_settings.googleSheetsPath);
 			}
 			GUILayout.EndHorizontal();
 			//-----
@@ -97,7 +96,7 @@ namespace RCore.SheetX
 			GUILayout.BeginHorizontal();
 			if (EditorHelper.Button("Add Google SpreadSheets", pWidth: 200, pHeight: 30))
 			{
-				EditGoogleSheetsWindow.ShowWindow(new GoogleSheetsPath(), m_settings.googleClientId, m_settings.googleClientSecret, output =>
+				EditGoogleSheetsWindow.ShowWindow(new GoogleSheetsPath(), m_settings.ObfGoogleClientId, m_settings.ObfGoogleClientSecret, output =>
 				{
 					if (!m_settings.googleSheetsPaths.Exists(x => x.id == output.id))
 						m_settings.googleSheetsPaths.Add(output);
@@ -158,7 +157,7 @@ namespace RCore.SheetX
 			{
 				if (GUI.Button(rect, "Edit"))
 				{
-					EditGoogleSheetsWindow.ShowWindow(item, m_settings.googleClientId, m_settings.googleClientSecret, output =>
+					EditGoogleSheetsWindow.ShowWindow(item, m_settings.ObfGoogleClientId, m_settings.ObfGoogleClientSecret, output =>
 					{
 						if (!m_settings.googleSheetsPaths.Exists(x => x.id == output.id))
 							m_settings.googleSheetsPaths.Add(output);
