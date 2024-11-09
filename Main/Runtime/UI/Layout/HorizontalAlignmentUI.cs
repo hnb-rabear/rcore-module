@@ -1,5 +1,5 @@
 ﻿/**
- * Author RadBear - nbhung71711 @gmail.com - 2017
+ * Author RaBear - HNB - 2017
  **/
 #pragma warning disable 0649
 
@@ -235,7 +235,7 @@ namespace RCore.UI
 #else
             if (m_coroutine != null)
                 StopCoroutine(m_coroutine);
-            m_coroutine = StartCoroutine(IEArrangeChildren(m_childrenPrePosition, m_childrenNewPosition, tweenTime));
+            m_coroutine = StartCoroutine(IEArrangeChildren(m_childrenPrePosition, m_childrenNewPosition, m_tweenTime));
             yield return m_coroutine;
 #endif
 			onFinish?.Invoke();

@@ -1,5 +1,5 @@
 ﻿/***
-* Author RadBear - nbhung71711 @gmail.com - 2019
+* Author RaBear - HNB - 2019
 **/
 
 using System;
@@ -490,7 +490,7 @@ namespace RCore.UI
 				});
 
 #else
-            StartCoroutine(IEArrangeChildren(childrenGroup, initialPositions, finalPositions, tweenTime, onFinish));
+            StartCoroutine(IEArrangeChildren(childrenGroup, initialPositions, finalPositions, m_tweenTime, onFinish));
 #endif
         }
 
