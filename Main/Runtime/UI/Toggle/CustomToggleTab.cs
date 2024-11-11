@@ -559,6 +559,6 @@ namespace RCore.UI
 				base.OnInspectorGUI();
 			}
 		}
-	}
 #endif
+	}
 }
