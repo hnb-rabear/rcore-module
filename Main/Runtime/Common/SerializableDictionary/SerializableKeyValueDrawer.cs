@@ -2,6 +2,7 @@
  * Author RaBear - HNB - 2024
  */
 #if UNITY_EDITOR
+using NPOI.Util.Collections;
 using UnityEditor;
 using UnityEngine;
 
@@ -83,9 +84,10 @@ namespace RCore.Editor
 						var imageRect = new Rect(valueRect.x + valueRect.width + 5, valueRect.y, THUMBNAIL_SIZE, THUMBNAIL_SIZE);
 
 						// Draw the texture or sprite thumbnail
-						var texture = valueObj is Sprite sprite ? sprite.texture : valueObj as Texture;
-						if (texture != null)
-							EditorGUI.ObjectField(imageRect, valueObj, typeof(Texture), allowSceneObjects: false);
+						if (valueObj is Texture)
+							valueProperty.objectReferenceValue = EditorGUI.ObjectField(imageRect, valueObj, typeof(Texture), allowSceneObjects: false);
+						else if (valueObj is Sprite)
+							valueProperty.objectReferenceValue = EditorGUI.ObjectField(imageRect, valueObj, typeof(Sprite), allowSceneObjects: false);
 					}
 				}
 				else

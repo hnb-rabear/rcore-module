@@ -7,7 +7,7 @@ namespace RCore.Editor.Inspector
 	[CustomPropertyDrawer(typeof(FolderPathAttribute))]
 	public class FolderPathPropertyDrawer : PropertyDrawer
 	{
-		public static string LastOpenedDirectory
+		private static string LastOpenedDirectory
 		{
 			get => EditorPrefs.GetString("LastOpenedDirectory");
 			set => EditorPrefs.SetString("LastOpenedDirectory", value);
@@ -18,7 +18,8 @@ namespace RCore.Editor.Inspector
 			if (property.propertyType == SerializedPropertyType.String)
 			{
 				EditorGUI.PrefixLabel(position, label);
-				if (GUI.Button(new Rect(position.x + EditorGUIUtility.labelWidth, position.y, position.width - EditorGUIUtility.labelWidth, position.height), property.stringValue))
+				var btnRect = new Rect(position.x + EditorGUIUtility.labelWidth, position.y, position.width - EditorGUIUtility.labelWidth, position.height);
+				if (GUI.Button(btnRect, string.IsNullOrEmpty(property.stringValue) ? "Select Folder" : property.stringValue))
 				{
 					string folder = property.stringValue;
 					if (string.IsNullOrEmpty(folder))
