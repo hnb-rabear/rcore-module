@@ -2397,7 +2397,7 @@ namespace RCore.Editor
 
 #region SerializedProperty SerializedObject
 
-		public static void SerializeFields(SerializedProperty pProperty, params string[] properties)
+		public static void SerializeFields(this SerializedProperty pProperty, params string[] properties)
         {
             foreach (var p in properties)
             {
@@ -2406,16 +2406,13 @@ namespace RCore.Editor
             }
         }
 
-        public static void SerializeFields(SerializedObject pObj, params string[] properties)
+        public static void SerializeFields(this SerializedObject pObj, params string[] properties)
         {
             foreach (var p in properties)
-            {
-                var item = pObj.FindProperty(p);
-                EditorGUILayout.PropertyField(item, true);
-            }
+                pObj.SerializeField(p);
         }
 
-        public static SerializedProperty SerializeField(SerializedObject pObj, string pPropertyName, string pDisplayName = null, params GUILayoutOption[] options)
+        public static SerializedProperty SerializeField(this SerializedObject pObj, string pPropertyName, string pDisplayName = null, params GUILayoutOption[] options)
         {
             var property = pObj.FindProperty(pPropertyName);
             if (property == null)
