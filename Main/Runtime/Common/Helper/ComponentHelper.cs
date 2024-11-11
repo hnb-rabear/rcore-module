@@ -248,17 +248,14 @@ namespace RCore
 				obj = objRoot;
 				return obj;
 			}
-			else
+			var trnsRoot = objRoot.transform;
+			int iNumChildren = trnsRoot.childCount;
+			for (int i = 0; i < iNumChildren; ++i)
 			{
-				var trnsRoot = objRoot.transform;
-				int iNumChildren = trnsRoot.childCount;
-				for (int i = 0; i < iNumChildren; ++i)
+				obj = trnsRoot.GetChild(i).gameObject.FindChildObject(pName, pContain);
+				if (obj != null)
 				{
-					obj = trnsRoot.GetChild(i).gameObject.FindChildObject(pName, pContain);
-					if (obj != null)
-					{
-						return obj;
-					}
+					return obj;
 				}
 			}
 
