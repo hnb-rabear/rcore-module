@@ -276,31 +276,6 @@ namespace RCore
 				trnsRoot.GetChild(i).gameObject.FindChildObjects(pName, pOutput, pContain);
 		}
 
-		public static List<T> RemoveDuplicate<T>(this List<T> pList) where T : UnityEngine.Object
-		{
-			var duplicate = new List<int>();
-			for (int i = 0; i < pList.Count; i++)
-			{
-				int count = 0;
-				for (int j = pList.Count - 1; j >= 0; j--)
-				{
-					if (pList[j] == pList[i])
-					{
-						count++;
-						if (count > 1)
-							duplicate.Add(j);
-					}
-				}
-			}
-			for (int j = pList.Count - 1; j >= 0; j--)
-			{
-				if (duplicate.Contains(j))
-					pList.Remove(pList[j]);
-			}
-
-			return pList;
-		}
-
 		public static void StopMove(this UnityEngine.AI.NavMeshAgent pAgent, bool pStop)
 		{
 			if (pAgent.gameObject.activeSelf || !pAgent.enabled || !pAgent.isOnNavMesh)

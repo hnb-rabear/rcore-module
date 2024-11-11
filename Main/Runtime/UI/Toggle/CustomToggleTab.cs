@@ -276,11 +276,11 @@ namespace RCore.UI
 		{
 			if (m_contentsActive != null)
 				foreach (var item in m_contentsActive)
-					item.SetActive(isOn);
+					item.gameObject.SetActive(isOn);
 
 			if (m_contentsInactive != null)
 				foreach (var item in m_contentsInactive)
-					item.SetActive(!isOn);
+					item.gameObject.SetActive(!isOn);
 
 			if (m_enableBgSpriteSwitch)
 				m_imgBackground.sprite = isOn ? m_sptActiveBackground : m_sptInactiveBackground;
@@ -334,11 +334,11 @@ namespace RCore.UI
 
 			if (m_contentsActive != null)
 				foreach (var item in m_contentsActive)
-					item.SetActive(isOn);
+					item.gameObject.SetActive(isOn);
 
 			if (m_contentsInactive != null)
 				foreach (var item in m_contentsInactive)
-					item.SetActive(!isOn);
+					item.gameObject.SetActive(!isOn);
 
 			if (Application.isPlaying)
 			{
