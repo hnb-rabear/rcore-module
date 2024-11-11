@@ -1,5 +1,8 @@
-﻿using UnityEngine;
+﻿using RCore.Inspector;
+using UnityEditor;
+using UnityEngine;
 using UnityEngine.AddressableAssets;
+using UnityEngine.Serialization;
 
 namespace RCore.Audio
 {
@@ -7,13 +10,10 @@ namespace RCore.Audio
     public class AudioCollection : ScriptableObject
     {
 #if UNITY_EDITOR
-	    [SerializeField] public bool m_ImportFromFolder = true;
 	    [SerializeField] public string m_Namespace;
-	    [SerializeField] public string m_NameClassMusic = "MusicIDs";
-	    [SerializeField] public string m_NameClassSFX = "SfxIDs";
-	    [SerializeField] public string m_MusicsPath;
-	    [SerializeField] public string m_SfxsPath;
-	    [SerializeField] public string m_ConfigPath;
+	    [SerializeField, FolderPath] public string m_MusicsPath;
+	    [SerializeField, FolderPath] public string m_SfxsPath;
+	    [SerializeField, FolderPath] public string m_AudioIdsPath;
 #endif
 
         public AudioClip[] sfxClips;
