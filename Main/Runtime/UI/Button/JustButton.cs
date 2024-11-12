@@ -156,7 +156,7 @@ namespace RCore.UI
 				base.OnPointerDown(eventData);
 				if (!string.IsNullOrEmpty(m_clickSfx))
 					EventDispatcher.Raise(new Audio.SFXTriggeredEvent(m_clickSfx));
-				
+
 				if (m_hapticTouch)
 					Vibration.VibratePop();
 			}
@@ -315,6 +315,29 @@ namespace RCore.UI
 				}
 			}
 		}
+
+		public void PlayBubbleEffect(float duration)
+		{
+#if DOTWEEN
+			float scaleDuration = 0.6f;
+			int loopCount = Mathf.Max(2, Mathf.RoundToInt(duration / scaleDuration));
+
+			// Ensure loop count is even
+			if (loopCount % 2 != 0)
+				loopCount++;
+
+			DOTween.Kill(GetInstanceID() + 1);
+			var bubbleSequence = DOTween.Sequence();
+			bubbleSequence.Append(transform.DOScale(0.9f, scaleDuration * 0.4f));
+			bubbleSequence.Append(transform.DOScale(1.1f, scaleDuration * 0.6f)).SetEase(Ease.OutSine);
+			bubbleSequence.SetLoops(loopCount, LoopType.Yoyo);
+			bubbleSequence.SetId(GetInstanceID() + 1);
+			bubbleSequence.OnComplete(() => transform.localScale = m_initialScale);
+#else
+			UnityEngine.Debug.LogError("Bubble Effect Requires DOTween");
+#endif
+		}
+
 
 #if UNITY_EDITOR
 
