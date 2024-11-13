@@ -277,8 +277,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
-  scaleBounceEffect: 1
   m_img: {fileID: 6323184087273364650}
+  scaleBounceEffect: 1
   perfectRatio: 2
   greyscaleEffect: 0
   imgOnOffSwap: 0

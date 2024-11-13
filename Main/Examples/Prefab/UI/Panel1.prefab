@@ -279,8 +279,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
-  scaleBounceEffect: 1
   m_img: {fileID: 6482338001790151083}
+  scaleBounceEffect: 1
   perfectRatio: 2
   greyscaleEffect: 1
   imgOnOffSwap: 0
@@ -288,7 +288,7 @@ MonoBehaviour:
   imgOff: {fileID: 0}
   tapFeedback: 2
   clickSfx: sfx_button_click
-  m_label: {fileID: 4127299651347387514}
+  label: {fileID: 4127299651347387514}
 --- !u!1 &4602843172443095432
 GameObject:
   m_ObjectHideFlags: 0
@@ -568,8 +568,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
-  scaleBounceEffect: 1
   m_img: {fileID: 1972845239463366328}
+  scaleBounceEffect: 1
   perfectRatio: 2
   greyscaleEffect: 1
   imgOnOffSwap: 0
@@ -577,7 +577,7 @@ MonoBehaviour:
   imgOff: {fileID: 0}
   tapFeedback: 2
   clickSfx: sfx_button_click
-  m_label: {fileID: 7944323239106436536}
+  label: {fileID: 7944323239106436536}
 --- !u!1 &7450802368099544633
 GameObject:
   m_ObjectHideFlags: 0
@@ -699,8 +699,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
-  scaleBounceEffect: 1
   m_img: {fileID: 6323184087273364650}
+  scaleBounceEffect: 1
   perfectRatio: 2
   greyscaleEffect: 0
   imgOnOffSwap: 0

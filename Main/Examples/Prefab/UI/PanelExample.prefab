@@ -659,7 +659,7 @@ MonoBehaviour:
   - {fileID: 875511634}
   contentsInactive: []
   additionalLabels: []
-  tapFeedback: 0
+  tapFeedback: 2
   sfxClip: button
   sfxClipOff: button
   scaleBounceEffect: 1
@@ -1285,8 +1285,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
-  scaleBounceEffect: 1
   m_img: {fileID: 926091324}
+  scaleBounceEffect: 1
   perfectRatio: 2
   greyscaleEffect: 1
   imgOnOffSwap: 0
@@ -1494,8 +1494,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
-  scaleBounceEffect: 1
   m_img: {fileID: 1189250056}
+  scaleBounceEffect: 1
   perfectRatio: 2
   greyscaleEffect: 1
   imgOnOffSwap: 0
@@ -1503,13 +1503,13 @@ MonoBehaviour:
   imgOff: {fileID: 0}
   tapFeedback: 2
   clickSfx: sfx_button_click
-  m_label: {fileID: 624936466}
-  m_fontColorOnOffSwap: 0
-  m_fontColorOn: {r: 0, g: 0, b: 0, a: 0}
-  m_fontColorOff: {r: 0, g: 0, b: 0, a: 0}
-  m_labelMatOnOffSwap: 0
-  m_labelMatOn: {fileID: 0}
-  m_labelMatOff: {fileID: 0}
+  label: {fileID: 624936466}
+  fontColorOnOffSwap: 0
+  fontColorOn: {r: 0, g: 0, b: 0, a: 0}
+  fontColorOff: {r: 0, g: 0, b: 0, a: 0}
+  labelMatOnOffSwap: 0
+  labelMatOn: {fileID: 0}
+  labelMatOff: {fileID: 0}
 --- !u!1 &1254777738
 GameObject:
   m_ObjectHideFlags: 0
@@ -2496,7 +2496,7 @@ MonoBehaviour:
   - {fileID: 1622762144}
   contentsInactive: []
   additionalLabels: []
-  tapFeedback: 0
+  tapFeedback: 2
   sfxClip: button
   sfxClipOff: button
   scaleBounceEffect: 1
@@ -2648,7 +2648,7 @@ MonoBehaviour:
   - {fileID: 1301017659}
   contentsInactive: []
   additionalLabels: []
-  tapFeedback: 0
+  tapFeedback: 2
   sfxClip: button
   sfxClipOff: button
   scaleBounceEffect: 1
@@ -2875,7 +2875,7 @@ MonoBehaviour:
   - {fileID: 1458240551}
   contentsInactive: []
   additionalLabels: []
-  tapFeedback: 0
+  tapFeedback: 2
   sfxClip: button
   sfxClipOff: button
   scaleBounceEffect: 1
@@ -4378,8 +4378,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
-  scaleBounceEffect: 1
   m_img: {fileID: 5651835835412589269}
+  scaleBounceEffect: 1
   perfectRatio: 2
   greyscaleEffect: 1
   imgOnOffSwap: 0

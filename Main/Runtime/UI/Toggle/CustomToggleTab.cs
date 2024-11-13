@@ -125,7 +125,7 @@ namespace RCore.UI
 		{
 			if (Application.isPlaying)
 				return;
-
+			
 			base.OnValidate();
 
 			if (txtLabel == null)

@@ -22,15 +22,15 @@ namespace RCore.UI
 	{
 		private static Material m_GreyMat;
 
+		[SerializeField] protected Image m_img;
+
 		[FormerlySerializedAs("m_scaleBounceEffect")]
 		[FormerlySerializedAs("mEnabledFX")]
 		public bool scaleBounceEffect = true;
 		[FormerlySerializedAs("mImg")]
-		[SerializeField] protected Image m_img;
 		[FormerlySerializedAs("m_perfectRatio")]
 		[FormerlySerializedAs("m_PerfectRatio")]
 		public PerfectRatio perfectRatio = PerfectRatio.Height;
-
 		[FormerlySerializedAs("m_greyscaleEffect")]
 		[FormerlySerializedAs("mGreyMatEnabled")]
 		public bool greyscaleEffect;
@@ -46,7 +46,7 @@ namespace RCore.UI
 		public TapFeedback tapFeedback = TapFeedback.Haptic;
 		[FormerlySerializedAs("m_clickSfx")]
 		[FormerlySerializedAs("m_SfxClip")]
-		public string clickSfx;
+		public string clickSfx = "button";
 		public Image img
 		{
 			get
@@ -282,7 +282,7 @@ namespace RCore.UI
 		{
 			if (Application.isPlaying)
 				return;
-
+			
 			base.OnValidate();
 
 			if (targetGraphic == null)
@@ -347,7 +347,6 @@ namespace RCore.UI
 				EditorGUILayout.BeginVertical("box");
 				{
 					serializedObject.SerializeField("m_img");
-					serializedObject.SerializeField("pivotForScaleBounce");
 					serializedObject.SerializeField("scaleBounceEffect");
 					serializedObject.SerializeField("greyscaleEffect");
 					serializedObject.SerializeField("clickSfx");
