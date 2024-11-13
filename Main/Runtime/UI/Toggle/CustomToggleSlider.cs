@@ -19,36 +19,25 @@ namespace RCore.UI
         public TextMeshProUGUI txtLabel;
 
         [Tooltip("Marker which move to On/Off position")]
-        [FormerlySerializedAs("toggleTransform")]
-        [SerializeField] private RectTransform m_toggleTransform;
+        public RectTransform toggleTransform;
         [Tooltip("Position that marker move to when toggle is on")]
-        [FormerlySerializedAs("onPosition")]
-        [SerializeField] private Vector2 m_onPosition;
+        public Vector2 onPosition;
         [Tooltip("Position that marker move to when toggle is off")]
-        [FormerlySerializedAs("offPosition")]
-        [SerializeField] private Vector2 m_offPosition;
+        public Vector2 offPosition;
 
-        [FormerlySerializedAs("enableOnOffContent")]
-        [SerializeField] private bool m_enableOnOffContent;
+        public bool enableOnOffContent;
         [Tooltip("Objects which active when toggle is on")]
-        [FormerlySerializedAs("onObjects")]
-        [SerializeField] private GameObject[] m_onObjects;
+        public GameObject[] onObjects;
         [Tooltip("Objects which active when toggle is off")]
-        [FormerlySerializedAs("offObjects")]
-        [SerializeField] private GameObject[] m_offObjects;
+        public GameObject[] offObjects;
 
-        [FormerlySerializedAs("enableOnOffColor")]
-        [SerializeField] private bool m_enableOnOffColor;
-        [FormerlySerializedAs("onColor")]
-        [SerializeField] private Color m_onColor;
-        [FormerlySerializedAs("offColor")]
-        [SerializeField] private Color m_offColor;
+        public bool enableOnOffColor;
+        public Color onColor;
+        public Color offColor;
         
-        [FormerlySerializedAs("sfxClip")]
-        [SerializeField] private string m_sfxClip = "button";
-        [FormerlySerializedAs("sfxClipOff")]
-        [SerializeField] private string m_sfxClipOff = "button";
-        [SerializeField] private bool m_hapticTouch;
+        public string sfxClip = "button";
+        public string sfxClipOff = "button";
+        public bool hapticTouch;
 
         protected override void OnEnable()
         {
@@ -65,32 +54,32 @@ namespace RCore.UI
 
         private void OnValueChanged(bool pIsOn)
         {
-            if (pIsOn && !string.IsNullOrEmpty(m_sfxClip))
-                EventDispatcher.Raise(new Audio.SFXTriggeredEvent(m_sfxClip));
-            else if (!pIsOn && !string.IsNullOrEmpty(m_sfxClipOff))
-                EventDispatcher.Raise(new Audio.SFXTriggeredEvent(m_sfxClipOff));
+            if (pIsOn && !string.IsNullOrEmpty(sfxClip))
+                EventDispatcher.Raise(new Audio.SFXTriggeredEvent(sfxClip));
+            else if (!pIsOn && !string.IsNullOrEmpty(sfxClipOff))
+                EventDispatcher.Raise(new Audio.SFXTriggeredEvent(sfxClipOff));
 
             Refresh();
         }
 
         private void Refresh()
         {
-            if (m_enableOnOffContent)
+            if (enableOnOffContent)
             {
-                if (m_onObjects != null)
-                    foreach (var onObject in m_onObjects)
+                if (onObjects != null)
+                    foreach (var onObject in onObjects)
                         onObject.SetActive(isOn);
-                if (m_offObjects != null)
-                    foreach (var offObject in m_offObjects)
+                if (offObjects != null)
+                    foreach (var offObject in offObjects)
                         offObject.SetActive(!isOn);
             }
-            if (m_toggleTransform != null)
-                m_toggleTransform.anchoredPosition = isOn ? m_onPosition : m_offPosition;
-            if (m_enableOnOffColor)
+            if (toggleTransform != null)
+                toggleTransform.anchoredPosition = isOn ? onPosition : offPosition;
+            if (enableOnOffColor)
             {
-                var targetImg = m_toggleTransform.GetComponent<Image>();
+                var targetImg = toggleTransform.GetComponent<Image>();
                 if (targetImg != null)
-                    targetImg.color = isOn ? m_onColor : m_offColor;
+                    targetImg.color = isOn ? onColor : offColor;
             }
         }
 
@@ -98,7 +87,7 @@ namespace RCore.UI
         {
             base.OnPointerClick(eventData);
             
-            if (m_hapticTouch)
+            if (hapticTouch)
                 Vibration.VibratePop();
         }
 
@@ -111,16 +100,16 @@ namespace RCore.UI
             if (graphic != null)
                 graphic.gameObject.SetActive(isOn);
 
-            if (m_toggleTransform != null)
-                m_toggleTransform.anchoredPosition = isOn ? m_onPosition : m_offPosition;
+            if (toggleTransform != null)
+                toggleTransform.anchoredPosition = isOn ? onPosition : offPosition;
 
-            if (m_enableOnOffContent)
+            if (enableOnOffContent)
             {
-                if (m_onObjects != null)
-                    foreach (var onObject in m_onObjects)
+                if (onObjects != null)
+                    foreach (var onObject in onObjects)
                         onObject.SetActive(isOn);
-                if (m_offObjects != null)
-                    foreach (var offObject in m_offObjects)
+                if (offObjects != null)
+                    foreach (var offObject in offObjects)
                         offObject.SetActive(!isOn);
             }
 
@@ -131,11 +120,11 @@ namespace RCore.UI
                     targetGraphic = images[0];
             }
 
-            if (m_enableOnOffColor)
+            if (enableOnOffColor)
             {
-                var targetImg = m_toggleTransform.GetComponent<Image>();
+                var targetImg = toggleTransform.GetComponent<Image>();
                 if (targetImg != null)
-                    targetImg.color = isOn ? m_onColor : m_offColor;
+                    targetImg.color = isOn ? onColor : offColor;
             }
         }
 #endif
@@ -143,7 +132,7 @@ namespace RCore.UI
 
 #if UNITY_EDITOR
     [UnityEditor.CustomEditor(typeof(CustomToggleSlider), true)]
-    class CustomToggleEditor : UnityEditor.UI.ToggleEditor
+    public class CustomToggleEditor : UnityEditor.UI.ToggleEditor
     {
         private CustomToggleSlider m_toggle;
 
@@ -158,31 +147,31 @@ namespace RCore.UI
         {
             UnityEditor.EditorGUILayout.BeginVertical("box");
             {
-                serializedObject.SerializeField("m_txtLabel");
-                serializedObject.SerializeField("m_toggleTransform");
-                serializedObject.SerializeField("m_onPosition");
-                serializedObject.SerializeField("m_offPosition");
-                serializedObject.SerializeField("m_sfxClip");
-                serializedObject.SerializeField("m_sfxClipOff");
-                serializedObject.SerializeField("m_hapticTouch");
+                serializedObject.SerializeField("txtLabel");
+                serializedObject.SerializeField("toggleTransform");
+                serializedObject.SerializeField("onPosition");
+                serializedObject.SerializeField("offPosition");
+                serializedObject.SerializeField("sfxClip");
+                serializedObject.SerializeField("sfxClipOff");
+                serializedObject.SerializeField("hapticTouch");
 
-                var property1 = serializedObject.SerializeField("m_enableOnOffContent");
+                var property1 = serializedObject.SerializeField("enableOnOffContent");
                 if (property1.boolValue)
                 {
                     UnityEditor.EditorGUI.indentLevel++;
                     UnityEditor.EditorGUILayout.BeginVertical("box");
-                    serializedObject.SerializeField("m_onObjects");
-                    serializedObject.SerializeField("m_offObjects");
+                    serializedObject.SerializeField("onObjects");
+                    serializedObject.SerializeField("offObjects");
                     UnityEditor.EditorGUILayout.EndVertical();
                     UnityEditor.EditorGUI.indentLevel--;
                 }
-                var property2 = serializedObject.SerializeField("m_enableOnOffColor");
+                var property2 = serializedObject.SerializeField("enableOnOffColor");
                 if (property2.boolValue)
                 {
                     UnityEditor.EditorGUI.indentLevel++;
                     UnityEditor.EditorGUILayout.BeginVertical("box");
-                    serializedObject.SerializeField("m_onColor");
-                    serializedObject.SerializeField("m_offColor");
+                    serializedObject.SerializeField("onColor");
+                    serializedObject.SerializeField("offColor");
                     UnityEditor.EditorGUILayout.EndVertical();
                     UnityEditor.EditorGUI.indentLevel--;
                 }

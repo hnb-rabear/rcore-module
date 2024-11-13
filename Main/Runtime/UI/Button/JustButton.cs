@@ -41,7 +41,7 @@ namespace RCore.UI
 		[SerializeField] protected Image m_img;
 		[FormerlySerializedAs("m_PerfectRatio")]
 		[SerializeField] protected PerfectRatio m_perfectRatio = PerfectRatio.Height;
-		[SerializeField] protected bool m_hapticTouch;
+		[SerializeField] protected bool m_hapticTouch = true;
 
 		[FormerlySerializedAs("mGreyMatEnabled")]
 		[SerializeField] protected bool m_greyscaleEffect;
