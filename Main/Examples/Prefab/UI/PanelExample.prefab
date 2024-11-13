@@ -653,32 +653,32 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_IsOn: 0
-  m_imgBackground: {fileID: 726644470}
-  m_txtLabel: {fileID: 791188244}
-  m_contentsActive:
+  imgBackground: {fileID: 726644470}
+  txtLabel: {fileID: 791188244}
+  contentsActive:
   - {fileID: 875511634}
-  m_contentsInactive: []
-  m_additionalLabels: []
-  m_sfxClip: button
-  m_sfxClipOff: button
-  m_scaleBounceEffect: 1
-  m_hapticTouch: 0
-  m_enableBgSpriteSwitch: 0
-  m_sptActiveBackground: {fileID: 0}
-  m_sptInactiveBackground: {fileID: 0}
-  m_enableBgColorSwitch: 1
-  m_colorActiveBackground: {r: 1, g: 1, b: 1, a: 1}
-  m_colorInactiveBackground: {r: 0.5568628, g: 0.5568628, b: 0.5568628, a: 1}
-  m_enableTextColorSwitch: 0
-  m_colorActiveText: {r: 1, g: 1, b: 1, a: 1}
-  m_colorInactiveText: {r: 0.5568628, g: 0.5568628, b: 0.5568628, a: 1}
-  m_enableSizeSwitch: 0
-  m_sizeActive: {x: 0, y: 0}
-  m_sizeInactive: {x: 0, y: 0}
-  m_enableFontSizeSwitch: 0
-  m_fontSizeActive: 0
-  m_fontSizeInactive: 0
-  m_tweenTime: 0.5
+  contentsInactive: []
+  additionalLabels: []
+  tapFeedback: 0
+  sfxClip: button
+  sfxClipOff: button
+  scaleBounceEffect: 1
+  enableBgSpriteSwitch: 0
+  sptActiveBackground: {fileID: 0}
+  sptInactiveBackground: {fileID: 0}
+  enableBgColorSwitch: 1
+  colorActiveBackground: {r: 1, g: 1, b: 1, a: 1}
+  colorInactiveBackground: {r: 0.5568628, g: 0.5568628, b: 0.5568628, a: 1}
+  enableTextColorSwitch: 0
+  colorActiveText: {r: 1, g: 1, b: 1, a: 1}
+  colorInactiveText: {r: 0.5568628, g: 0.5568628, b: 0.5568628, a: 1}
+  enableSizeSwitch: 0
+  sizeActive: {x: 0, y: 0}
+  sizeInactive: {x: 0, y: 0}
+  enableFontSizeSwitch: 0
+  fontSizeActive: 0
+  fontSizeInactive: 0
+  tweenTime: 0.5
   isLocked: 0
 --- !u!1 &791188242
 GameObject:
@@ -1285,15 +1285,15 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
-  m_scaleBounceEffect: 1
+  scaleBounceEffect: 1
   m_img: {fileID: 926091324}
-  m_perfectRatio: 2
-  m_hapticTouch: 0
-  m_greyscaleEffect: 1
-  m_imgOnOffSwap: 0
-  m_imgOn: {fileID: 0}
-  m_imgOff: {fileID: 0}
-  m_clickSfx: sfx_button_click
+  perfectRatio: 2
+  greyscaleEffect: 1
+  imgOnOffSwap: 0
+  imgOn: {fileID: 0}
+  imgOff: {fileID: 0}
+  tapFeedback: 2
+  clickSfx: sfx_button_click
 --- !u!1 &1167726644
 GameObject:
   m_ObjectHideFlags: 0
@@ -1494,15 +1494,15 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
-  m_scaleBounceEffect: 1
+  scaleBounceEffect: 1
   m_img: {fileID: 1189250056}
-  m_perfectRatio: 2
-  m_hapticTouch: 0
-  m_greyscaleEffect: 1
-  m_imgOnOffSwap: 0
-  m_imgOn: {fileID: 0}
-  m_imgOff: {fileID: 0}
-  m_clickSfx: sfx_button_click
+  perfectRatio: 2
+  greyscaleEffect: 1
+  imgOnOffSwap: 0
+  imgOn: {fileID: 0}
+  imgOff: {fileID: 0}
+  tapFeedback: 2
+  clickSfx: sfx_button_click
   m_label: {fileID: 624936466}
   m_fontColorOnOffSwap: 0
   m_fontColorOn: {r: 0, g: 0, b: 0, a: 0}
@@ -2353,18 +2353,18 @@ MonoBehaviour:
       m_Calls: []
   m_IsOn: 1
   txtLabel: {fileID: 1254777740}
-  m_toggleTransform: {fileID: 2074151102}
-  m_onPosition: {x: 30, y: 0}
-  m_offPosition: {x: 270, y: 0}
-  m_enableOnOffContent: 0
-  m_onObjects: []
-  m_offObjects: []
-  m_enableOnOffColor: 0
-  m_onColor: {r: 0, g: 0, b: 0, a: 0}
-  m_offColor: {r: 0, g: 0, b: 0, a: 0}
-  m_sfxClip: button
-  m_sfxClipOff: button
-  m_hapticTouch: 0
+  toggleTransform: {fileID: 0}
+  onPosition: {x: 0, y: 0}
+  offPosition: {x: 0, y: 0}
+  enableOnOffContent: 0
+  onObjects: []
+  offObjects: []
+  enableOnOffColor: 0
+  onColor: {r: 0, g: 0, b: 0, a: 0}
+  offColor: {r: 0, g: 0, b: 0, a: 0}
+  tapFeedback: 2
+  sfxClip: button
+  sfxClipOff: button
 --- !u!1 &1718718361
 GameObject:
   m_ObjectHideFlags: 0
@@ -2490,32 +2490,32 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_IsOn: 0
-  m_imgBackground: {fileID: 1718718364}
-  m_txtLabel: {fileID: 1687947562}
-  m_contentsActive:
+  imgBackground: {fileID: 1718718364}
+  txtLabel: {fileID: 1687947562}
+  contentsActive:
   - {fileID: 1622762144}
-  m_contentsInactive: []
-  m_additionalLabels: []
-  m_sfxClip: button
-  m_sfxClipOff: button
-  m_scaleBounceEffect: 1
-  m_hapticTouch: 0
-  m_enableBgSpriteSwitch: 0
-  m_sptActiveBackground: {fileID: 0}
-  m_sptInactiveBackground: {fileID: 0}
-  m_enableBgColorSwitch: 1
-  m_colorActiveBackground: {r: 1, g: 1, b: 1, a: 1}
-  m_colorInactiveBackground: {r: 0.5568628, g: 0.5568628, b: 0.5568628, a: 1}
-  m_enableTextColorSwitch: 0
-  m_colorActiveText: {r: 1, g: 1, b: 1, a: 1}
-  m_colorInactiveText: {r: 0.5568628, g: 0.5568628, b: 0.5568628, a: 1}
-  m_enableSizeSwitch: 0
-  m_sizeActive: {x: 0, y: 0}
-  m_sizeInactive: {x: 0, y: 0}
-  m_enableFontSizeSwitch: 0
-  m_fontSizeActive: 0
-  m_fontSizeInactive: 0
-  m_tweenTime: 0.5
+  contentsInactive: []
+  additionalLabels: []
+  tapFeedback: 0
+  sfxClip: button
+  sfxClipOff: button
+  scaleBounceEffect: 1
+  enableBgSpriteSwitch: 0
+  sptActiveBackground: {fileID: 0}
+  sptInactiveBackground: {fileID: 0}
+  enableBgColorSwitch: 1
+  colorActiveBackground: {r: 1, g: 1, b: 1, a: 1}
+  colorInactiveBackground: {r: 0.5568628, g: 0.5568628, b: 0.5568628, a: 1}
+  enableTextColorSwitch: 0
+  colorActiveText: {r: 1, g: 1, b: 1, a: 1}
+  colorInactiveText: {r: 0.5568628, g: 0.5568628, b: 0.5568628, a: 1}
+  enableSizeSwitch: 0
+  sizeActive: {x: 0, y: 0}
+  sizeInactive: {x: 0, y: 0}
+  enableFontSizeSwitch: 0
+  fontSizeActive: 0
+  fontSizeInactive: 0
+  tweenTime: 0.5
   isLocked: 0
 --- !u!1 &1977578065
 GameObject:
@@ -2642,32 +2642,32 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_IsOn: 0
-  m_imgBackground: {fileID: 1977578068}
-  m_txtLabel: {fileID: 164487018}
-  m_contentsActive:
+  imgBackground: {fileID: 1977578068}
+  txtLabel: {fileID: 164487018}
+  contentsActive:
   - {fileID: 1301017659}
-  m_contentsInactive: []
-  m_additionalLabels: []
-  m_sfxClip: button
-  m_sfxClipOff: button
-  m_scaleBounceEffect: 1
-  m_hapticTouch: 0
-  m_enableBgSpriteSwitch: 0
-  m_sptActiveBackground: {fileID: 0}
-  m_sptInactiveBackground: {fileID: 0}
-  m_enableBgColorSwitch: 1
-  m_colorActiveBackground: {r: 1, g: 1, b: 1, a: 1}
-  m_colorInactiveBackground: {r: 0.5566038, g: 0.5566038, b: 0.5566038, a: 1}
-  m_enableTextColorSwitch: 0
-  m_colorActiveText: {r: 0, g: 0, b: 0, a: 0}
-  m_colorInactiveText: {r: 0, g: 0, b: 0, a: 0}
-  m_enableSizeSwitch: 0
-  m_sizeActive: {x: 0, y: 0}
-  m_sizeInactive: {x: 0, y: 0}
-  m_enableFontSizeSwitch: 0
-  m_fontSizeActive: 0
-  m_fontSizeInactive: 0
-  m_tweenTime: 0.5
+  contentsInactive: []
+  additionalLabels: []
+  tapFeedback: 0
+  sfxClip: button
+  sfxClipOff: button
+  scaleBounceEffect: 1
+  enableBgSpriteSwitch: 0
+  sptActiveBackground: {fileID: 0}
+  sptInactiveBackground: {fileID: 0}
+  enableBgColorSwitch: 1
+  colorActiveBackground: {r: 1, g: 1, b: 1, a: 1}
+  colorInactiveBackground: {r: 0.5566038, g: 0.5566038, b: 0.5566038, a: 1}
+  enableTextColorSwitch: 0
+  colorActiveText: {r: 0, g: 0, b: 0, a: 0}
+  colorInactiveText: {r: 0, g: 0, b: 0, a: 0}
+  enableSizeSwitch: 0
+  sizeActive: {x: 0, y: 0}
+  sizeInactive: {x: 0, y: 0}
+  enableFontSizeSwitch: 0
+  fontSizeActive: 0
+  fontSizeInactive: 0
+  tweenTime: 0.5
   isLocked: 0
 --- !u!1 &2074151101
 GameObject:
@@ -2869,32 +2869,32 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_IsOn: 0
-  m_imgBackground: {fileID: 2093649980}
-  m_txtLabel: {fileID: 562766627}
-  m_contentsActive:
+  imgBackground: {fileID: 2093649980}
+  txtLabel: {fileID: 562766627}
+  contentsActive:
   - {fileID: 1458240551}
-  m_contentsInactive: []
-  m_additionalLabels: []
-  m_sfxClip: button
-  m_sfxClipOff: button
-  m_scaleBounceEffect: 1
-  m_hapticTouch: 0
-  m_enableBgSpriteSwitch: 0
-  m_sptActiveBackground: {fileID: 0}
-  m_sptInactiveBackground: {fileID: 0}
-  m_enableBgColorSwitch: 1
-  m_colorActiveBackground: {r: 1, g: 1, b: 1, a: 1}
-  m_colorInactiveBackground: {r: 0.5568628, g: 0.5568628, b: 0.5568628, a: 1}
-  m_enableTextColorSwitch: 0
-  m_colorActiveText: {r: 0, g: 0, b: 0, a: 0}
-  m_colorInactiveText: {r: 0, g: 0, b: 0, a: 0}
-  m_enableSizeSwitch: 0
-  m_sizeActive: {x: 0, y: 0}
-  m_sizeInactive: {x: 0, y: 0}
-  m_enableFontSizeSwitch: 0
-  m_fontSizeActive: 0
-  m_fontSizeInactive: 0
-  m_tweenTime: 0.5
+  contentsInactive: []
+  additionalLabels: []
+  tapFeedback: 0
+  sfxClip: button
+  sfxClipOff: button
+  scaleBounceEffect: 1
+  enableBgSpriteSwitch: 0
+  sptActiveBackground: {fileID: 0}
+  sptInactiveBackground: {fileID: 0}
+  enableBgColorSwitch: 1
+  colorActiveBackground: {r: 1, g: 1, b: 1, a: 1}
+  colorInactiveBackground: {r: 0.5568628, g: 0.5568628, b: 0.5568628, a: 1}
+  enableTextColorSwitch: 0
+  colorActiveText: {r: 0, g: 0, b: 0, a: 0}
+  colorInactiveText: {r: 0, g: 0, b: 0, a: 0}
+  enableSizeSwitch: 0
+  sizeActive: {x: 0, y: 0}
+  sizeInactive: {x: 0, y: 0}
+  enableFontSizeSwitch: 0
+  fontSizeActive: 0
+  fontSizeInactive: 0
+  tweenTime: 0.5
   isLocked: 0
 --- !u!1 &280434171893452084
 GameObject:
@@ -4378,12 +4378,12 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
-  m_scaleBounceEffect: 1
+  scaleBounceEffect: 1
   m_img: {fileID: 5651835835412589269}
-  m_perfectRatio: 2
-  m_hapticTouch: 0
-  m_greyscaleEffect: 1
-  m_imgOnOffSwap: 0
-  m_imgOn: {fileID: 0}
-  m_imgOff: {fileID: 0}
-  m_clickSfx: sfx_button_click
+  perfectRatio: 2
+  greyscaleEffect: 1
+  imgOnOffSwap: 0
+  imgOn: {fileID: 0}
+  imgOff: {fileID: 0}
+  tapFeedback: 2
+  clickSfx: sfx_button_click
