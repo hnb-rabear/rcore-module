@@ -277,11 +277,10 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
-  m_pivotForScaleBounce: 6
   m_scaleBounceEffect: 1
   m_img: {fileID: 6323184087273364650}
-  m_initialScale: {x: 1, y: 1}
   m_perfectRatio: 2
+  m_hapticTouch: 0
   m_greyscaleEffect: 0
   m_imgOnOffSwap: 0
   m_imgOn: {fileID: 0}

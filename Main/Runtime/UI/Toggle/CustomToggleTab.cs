@@ -32,12 +32,12 @@ namespace RCore.UI
 		[SerializeField] private List<RectTransform> m_contentsInactive;
 		[FormerlySerializedAs("additionalLabels")]
 		[SerializeField] private List<TextMeshProUGUI> m_additionalLabels;
+		[SerializeField] private TapFeedback tapFeedback;
 		[FormerlySerializedAs("sfxClip")]
 		[SerializeField] private string m_sfxClip = "button";
 		[FormerlySerializedAs("sfxClipOff")]
 		[SerializeField] private string m_sfxClipOff = "button";
 		[SerializeField] private bool m_scaleBounceEffect = true;
-		[SerializeField] private bool m_hapticTouch;
 
 		[FormerlySerializedAs("enableBgSpriteSwitch")]
 		[SerializeField] private bool m_enableBgSpriteSwitch;
@@ -84,6 +84,7 @@ namespace RCore.UI
 		private CustomToggleGroup m_customToggleGroup;
 		private bool m_isOn2;
 		private Vector2 m_initialScale;
+		private bool m_clicked;
 
 		public bool IsOn
 		{
@@ -209,7 +210,7 @@ namespace RCore.UI
 
 			if (m_scaleBounceEffect)
 				transform.localScale = m_initialScale;
-			
+
 			onValueChanged.AddListener(OnValueChanged);
 
 			Refresh();
@@ -218,7 +219,7 @@ namespace RCore.UI
 		protected override void OnDisable()
 		{
 			base.OnDisable();
-			
+
 			if (m_scaleBounceEffect)
 				transform.localScale = m_initialScale;
 
@@ -232,17 +233,14 @@ namespace RCore.UI
 				onClickOnLock?.Invoke();
 				return;
 			}
-
+			m_clicked = true;
 			base.OnPointerClick(p_eventData);
-			
-			if (m_hapticTouch)
-				Vibration.VibratePop();
 		}
 
 		public override void OnPointerDown(PointerEventData eventData)
 		{
 			base.OnPointerDown(eventData);
-			
+
 			if (!isLocked && m_scaleBounceEffect)
 			{
 #if DOTWEEN
@@ -261,7 +259,7 @@ namespace RCore.UI
 		public override void OnPointerUp(PointerEventData eventData)
 		{
 			base.OnPointerUp(eventData);
-			
+
 			if (!isLocked && m_scaleBounceEffect)
 			{
 #if DOTWEEN
@@ -456,11 +454,19 @@ namespace RCore.UI
 
 		private void OnValueChanged(bool p_pIsOn)
 		{
-			if (p_pIsOn && !string.IsNullOrEmpty(m_sfxClip))
-				EventDispatcher.Raise(new Audio.SFXTriggeredEvent(m_sfxClip));
-			else if (!p_pIsOn && !string.IsNullOrEmpty(m_sfxClipOff))
-				EventDispatcher.Raise(new Audio.SFXTriggeredEvent(m_sfxClipOff));
-
+			if (m_clicked)
+			{
+				if (tapFeedback == TapFeedback.Haptic || tapFeedback == TapFeedback.SoundAndHaptic)
+					Vibration.VibratePop();
+				if (tapFeedback == TapFeedback.Sound || tapFeedback == TapFeedback.SoundAndHaptic)
+				{
+					if (IsOn && !string.IsNullOrEmpty(m_sfxClip))
+						EventDispatcher.Raise(new Audio.SFXTriggeredEvent(m_sfxClip));
+					else if (!isOn && !string.IsNullOrEmpty(m_sfxClipOff))
+						EventDispatcher.Raise(new Audio.SFXTriggeredEvent(m_sfxClipOff));
+				}
+				m_clicked = false;
+			}
 #if DOTWEEN
 			if (Application.isPlaying && m_tweenTime > 0 && transition != Transition.Animation)
 			{
