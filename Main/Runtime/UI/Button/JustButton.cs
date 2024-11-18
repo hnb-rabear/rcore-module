@@ -1,7 +1,8 @@
 ﻿/***
- * Author RaBear - HNB - 2018
+ * Author HNB-RaBear - 2018
  **/
 
+using CandyCoded.HapticFeedback;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
@@ -24,28 +25,12 @@ namespace RCore.UI
 
 		[SerializeField] protected Image m_img;
 
-		[FormerlySerializedAs("m_scaleBounceEffect")]
-		[FormerlySerializedAs("mEnabledFX")]
 		public bool scaleBounceEffect = true;
-		[FormerlySerializedAs("mImg")]
-		[FormerlySerializedAs("m_perfectRatio")]
-		[FormerlySerializedAs("m_PerfectRatio")]
 		public PerfectRatio perfectRatio = PerfectRatio.Height;
-		[FormerlySerializedAs("m_greyscaleEffect")]
-		[FormerlySerializedAs("mGreyMatEnabled")]
 		public bool greyscaleEffect;
-		[FormerlySerializedAs("m_imgOnOffSwap")]
-		[FormerlySerializedAs("mImgSwapEnabled")]
 		public bool imgOnOffSwap;
-		[FormerlySerializedAs("m_imgOn")]
-		[FormerlySerializedAs("mImgActive")]
 		public Sprite imgOn;
-		[FormerlySerializedAs("m_imgOff")]
-		[FormerlySerializedAs("mImgInactive")]
 		public Sprite imgOff;
-		public TapFeedback tapFeedback = TapFeedback.Haptic;
-		[FormerlySerializedAs("m_clickSfx")]
-		[FormerlySerializedAs("m_SfxClip")]
 		public string clickSfx = "button";
 		public Image img
 		{
@@ -140,10 +125,9 @@ namespace RCore.UI
 			{
 				base.OnPointerDown(eventData);
 				
-				if (tapFeedback == TapFeedback.Haptic || tapFeedback == TapFeedback.SoundAndHaptic)
-					Vibration.VibratePop();
+				HapticFeedback.LightFeedback();
 				
-				if ((tapFeedback == TapFeedback.Sound || tapFeedback == TapFeedback.SoundAndHaptic) && !string.IsNullOrEmpty(clickSfx))
+				if (!string.IsNullOrEmpty(clickSfx))
 					EventDispatcher.Raise(new Audio.SFXTriggeredEvent(clickSfx));
 			}
 
@@ -350,7 +334,6 @@ namespace RCore.UI
 					serializedObject.SerializeField("scaleBounceEffect");
 					serializedObject.SerializeField("greyscaleEffect");
 					serializedObject.SerializeField("clickSfx");
-					serializedObject.SerializeField("tapFeedback");
 					serializedObject.SerializeField("perfectRatio");
 					var imgSwapEnabled = serializedObject.SerializeField("imgOnOffSwap");
 					if (imgSwapEnabled.boolValue)

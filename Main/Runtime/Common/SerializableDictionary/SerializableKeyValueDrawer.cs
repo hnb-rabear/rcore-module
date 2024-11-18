@@ -1,9 +1,8 @@
 /***
- * Author RaBear - HNB - 2024
+ * Author HNB-RaBear - 2024
  */
 
 #if UNITY_EDITOR
-using NPOI.Util.Collections;
 using UnityEditor;
 using UnityEngine;
 

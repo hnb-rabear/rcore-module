@@ -1,3 +1,7 @@
+/**
+ * Author HNB-RaBear - 2024
+ **/
+
 using System.Collections.Generic;
 using Newtonsoft.Json;
 using RCore.Data.JObject;
@@ -72,7 +76,12 @@ namespace RCore.Editor.Data.JObject
 					JObjectDB.Save();
 				},
 			});
-			EditorHelper.GridDraws(2, actions);
+			actions.Add(new EditorButton
+			{
+				label = "Reload",
+				onPressed = () => m_data = JObjectDB.GetAllData()
+			});
+			EditorHelper.GridDraws(3, actions);
 
 			EditorHelper.BoxVertical("JObjects", () =>
 			{
@@ -106,7 +115,7 @@ namespace RCore.Editor.Data.JObject
 
 		public static void ShowWindow()
 		{
-			var window = GetWindow<JObjectDBWindow>("JObjectDB", true);
+			var window = GetWindow<JObjectDBWindow>("JObject Database", true);
 			window.Show();
 		}
 	}

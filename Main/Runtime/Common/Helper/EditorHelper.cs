@@ -1,6 +1,6 @@
-﻿/**
-* Author RaBear - HNB - 2017
-**/
+﻿/***
+ * Author HNB-RaBear - 2017
+ */
 
 #if UNITY_EDITOR
 using System;
@@ -376,20 +376,21 @@ namespace RCore.Editor
             GUILayout.BeginHorizontal();
             foreach (var tabName in tabsName)
             {
+	            bool isOn = CurrentTab == tabName;
                 var buttonStyle = new GUIStyle(EditorStyles.toolbarButton)
                 {
                     fixedHeight = 0,
                     padding = new RectOffset(4, 4, 4, 4),
                     normal =
                     {
-                        textColor = Color.white
+	                    textColor = EditorGUIUtility.isProSkin ? Color.white : (isOn ? Color.black : Color.black * 0.6f)
                     },
                     fontStyle = FontStyle.Bold,
                     fontSize = 13
                 };
 
                 var preColor = GUI.color;
-                var color = CurrentTab == tabName ? Color.white : Color.gray;
+                var color = isOn ? Color.white : Color.gray;
                 GUI.color = color;
 
                 if (GUILayout.Button(tabName, buttonStyle))
@@ -1538,7 +1539,7 @@ namespace RCore.Editor
             GUI.backgroundColor = prevColor;
         }
 
-        public static void ListObjectsWithSearch<T>(ref List<T> pList, string pName, bool pShowObjectBox = true) where T : UnityEngine.Object
+        public static void ListObjectsWithSearch<T>(ref List<T> pList, string pName, bool pShowObjectBox = true) where T : Object
         {
             var prevColor = GUI.color;
             GUI.backgroundColor = new Color(1, 1, 0.5f);
@@ -2604,8 +2605,13 @@ namespace RCore.Editor
 
         public static string OpenFolderPanel(string pFolderPath = null)
         {
-            pFolderPath ??= Application.dataPath;
+	        if (string.IsNullOrEmpty(pFolderPath))
+		        pFolderPath = LastOpenedDirectory;
+	        if (string.IsNullOrEmpty(pFolderPath))
+				pFolderPath ??= Application.dataPath;
             string path = EditorUtility.OpenFolderPanel("Select Folder", pFolderPath, "");
+            if (!string.IsNullOrEmpty(path))
+				LastOpenedDirectory = path;
             return path;
         }
 
@@ -2735,7 +2741,7 @@ namespace RCore.Editor
             return null;
         }
 
-        public static string LastOpenedDirectory
+        private static string LastOpenedDirectory
         {
 	        get => EditorPrefs.GetString("LastOpenedDirectory");
 	        set => EditorPrefs.SetString("LastOpenedDirectory", value);
@@ -2760,6 +2766,65 @@ namespace RCore.Editor
 		        LastOpenedDirectory = Path.GetDirectoryName(path);
 	        return path;
         } 
+        
+        public static void ExportSelectedFoldersToUnityPackage()
+        {
+	        var objects = Selection.GetFiltered(typeof(Object), SelectionMode.Assets);
+	        if (objects.Length == 0)
+		        return;
+
+	        var folders = new List<string>();
+	        for (int i = 0; i < objects.Length; i++)
+	        {
+		        var obj = objects[i];
+		        bool isFolder = AssetDatabase.IsValidFolder(AssetDatabase.GetAssetPath(obj));
+		        if (isFolder)
+			        folders.Add(AssetDatabase.GetAssetPath(obj));
+	        }
+	        if (folders.Count > 0)
+	        {
+		        string directoryPath = AssetDatabase.GetAssetPath(objects[0]);
+		        string packagePath = EditorUtility.SaveFilePanel("Export Unity Package", directoryPath, objects[0].name + ".unitypackage", "unitypackage");
+		        AssetDatabase.ExportPackage(folders.ToArray(), packagePath, ExportPackageOptions.Recurse | ExportPackageOptions.Interactive);
+	        }
+        }
+        
+        public static void RefreshAssetsInSelectedFolder(string filter)
+        {
+	        var objects = Selection.GetFiltered(typeof(Object), SelectionMode.Assets);
+	        if (objects.Length == 0)
+		        return;
+	        for (int i = 0; i < objects.Length; i++)
+	        {
+		        var obj = objects[i];
+		        bool isFolder = AssetDatabase.IsValidFolder(AssetDatabase.GetAssetPath(obj));
+		        if (isFolder)
+		        {
+			        string directoryPath = AssetDatabase.GetAssetPath(obj);
+			        RefreshAssets(filter, directoryPath);
+		        }
+	        }
+        }
+        
+        public static void RefreshAssets(string filter, string folderPath = null)
+        {
+	        if (string.IsNullOrEmpty(folderPath))
+	        {
+		        folderPath = OpenFolderPanel();
+		        if (string.IsNullOrEmpty(folderPath))
+			        return;
+		        folderPath = FormatPathToUnityPath(folderPath);
+	        }
+	        var assetGUIDs = AssetDatabase.FindAssets(filter, new[] { folderPath });
+	        foreach (string guid in assetGUIDs)
+	        {
+		        var path = AssetDatabase.GUIDToAssetPath(guid);
+		        var asset = AssetDatabase.LoadAssetAtPath<Object>(path);
+		        if (asset != null)
+			        EditorUtility.SetDirty(asset);
+	        }
+	        AssetDatabase.SaveAssets();
+        }
         
 #endregion
 
