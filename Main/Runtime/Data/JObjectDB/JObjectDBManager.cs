@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -5,6 +6,8 @@ namespace RCore.Data.JObject
 {
 	public abstract class JObjectDBManager<T> : MonoBehaviour where T : JObjectsCollection
 	{
+		public Action onInitialized;
+		
 		[SerializeField] protected T m_dataCollection;
 		[SerializeField, Range(1, 10)] protected int m_saveDelay = 3;
 		[SerializeField] protected bool m_enabledSave = true;
@@ -79,6 +82,7 @@ namespace RCore.Data.JObject
 			m_dataCollection.Load();
 			PostLoad();
 			m_initialized = true;
+			onInitialized?.Invoke();
 		}
 
 		public virtual void Save(bool now = false, float saveDelayCustom = 0)
