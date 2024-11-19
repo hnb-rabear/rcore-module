@@ -13,11 +13,11 @@ MonoBehaviour:
   m_Name: ExampleJObjectsCollection
   m_EditorClassIdentifier: 
   sessionData:
-    sessions: 03000000030000000300000003000000
+    sessions: 01000000010000000100000001000000
     days: 1
     daysStreak: 1
-    activeTime: 20.860462
-    lastActive: 1731895502
+    activeTime: 12.240871
+    lastActive: 1731894976
     firstActive: 1731894961
   inventory:
     items:
