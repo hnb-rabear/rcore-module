@@ -20,7 +20,6 @@ namespace RCore
 	public static class WebRequestHelper
 	{
 		public const string WORLD_TIME_API = "https://worldtimeapi.org/api/timezone/Etc/UTC";
-		public const string FC_TIME_API = "https://farmcityer.com/gettime.php";
 		private static bool m_RequestingServerTime;
 		private static float m_GetServerTimeAt;
 		private static DateTime m_ServerTime;
@@ -50,32 +49,6 @@ namespace RCore
 			{
 				m_IsOnline = true;
 				ipInfo = JsonUtility.FromJson<IPInfo>(w.downloadHandler.text);
-			}
-		}
-		public static async void RequestFCTime(bool renew = false)
-		{
-			if (Application.internetReachability == NetworkReachability.NotReachable)
-			{
-				m_IsOnline = false;
-				return;
-			}
-			if (m_RequestingServerTime || m_GetServerTimeAt > 0 && !renew)
-				return;
-			m_RequestingServerTime = true;
-			var request = await UnityWebRequest.Get(FC_TIME_API).SendWebRequest();
-			m_RequestingServerTime = false;
-			if (request.result == UnityWebRequest.Result.Success)
-			{
-				if (request.responseCode == 200)
-				{
-					m_IsOnline = true;
-					var text = request.downloadHandler.text;
-					if (int.TryParse(text, out int timestamp))
-					{
-						m_ServerTime = TimeHelper.UnixTimestampToDateTime(timestamp);
-						m_GetServerTimeAt = Time.unscaledTime;
-					}
-				}
 			}
 		}
 		public static async void RequestUtcTime(bool renew = false)
