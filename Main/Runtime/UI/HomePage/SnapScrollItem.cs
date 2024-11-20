@@ -5,6 +5,7 @@ namespace RCore.UI
     public abstract class SnapScrollItem : MonoBehaviour
     {
         [SerializeField] protected RectTransform m_Main;
+        [SerializeField] protected Canvas m_MainCanvas;
 
         protected RectTransform m_RectTransform;
         protected bool m_refreshed;

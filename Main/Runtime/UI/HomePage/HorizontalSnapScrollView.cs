@@ -1,10 +1,12 @@
 ﻿// Author - RaBear - 2020
 
+using System.Collections.Generic;
 using UnityEngine;
 using System;
 using UnityEngine.UI;
 using RCore.Inspector;
 using UnityEngine.EventSystems;
+using UnityEngine.Serialization;
 #if DOTWEEN
 using DG.Tweening;
 #endif
@@ -21,12 +23,12 @@ namespace RCore.UI
 		public Action onScrollEnd;
 		public Action onScrollStart;
 
-		[SerializeField] private int m_StartIndex = 2;
-		[SerializeField] private float m_MinSpringTime = 0.4f;
-		[SerializeField] private float m_MaxSpringTime = 0.8f;
-		[SerializeField] private float m_SpringThreshold = 100;
+		[SerializeField] private int m_StartIndex;
+		[SerializeField] private float m_MinSpringTime = 0.5f;
+		[SerializeField] private float m_MaxSpringTime = 1f;
+		[SerializeField] private float m_SpringThreshold = 15;
 		[SerializeField] private bool m_AutoSetMinScrollReaction = true;
-		[SerializeField] private float m_MinScrollReaction = 55;
+		[SerializeField] private float m_MinScrollReaction = 10;
 		[SerializeField] private Vector2 m_TargetPosOffset;
 		[SerializeField] private ScrollRect m_ScrollView;
 		[SerializeField] private SnapScrollItem[] m_Items;
@@ -38,6 +40,7 @@ namespace RCore.UI
 		[SerializeField, ReadOnly] private int m_FocusedItemIndex = -1;
 		[SerializeField, ReadOnly] private int m_PreviousItemIndex = -1;
 		[SerializeField, ReadOnly] private bool m_IsSnapping;
+		[FormerlySerializedAs("m_IsDraging")]
 		[SerializeField, ReadOnly] private bool m_IsDragging;
 		[SerializeField, ReadOnly] private bool m_Validated;
 
