@@ -1,4 +1,8 @@
-﻿using RCore.Inspector;
+﻿#if ODIN_INSPECTOR
+using Sirenix.OdinInspector;
+#else
+using RCore.Inspector;
+#endif
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 
