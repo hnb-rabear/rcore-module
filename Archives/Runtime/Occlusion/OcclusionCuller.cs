@@ -51,7 +51,6 @@ namespace RCore.Misc
 				culledRenderers[i].MakeVisible();
 		}
 		
-		[InspectorButton]
 		private void OnValidate()
 		{
 			culledRenderers = new List<OcclusionCulledRenderer>();

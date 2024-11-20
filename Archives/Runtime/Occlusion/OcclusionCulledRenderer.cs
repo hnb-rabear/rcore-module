@@ -30,7 +30,6 @@ namespace RCore.Misc
                 OcclusionCuller.Instance.UnRegister(this);
         }
         
-        [InspectorButton]
         private void OnValidate()
         {
             CacheRenderers();
