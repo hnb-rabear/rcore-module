@@ -154,7 +154,7 @@ namespace RCore.UI
 
 		public void OnBeginDrag(PointerEventData eventData)
 		{
-			if (!m_ScrollView.horizontal)
+			if (!m_ScrollView.horizontal || m_IsSnapping)
 				return;
 #if DOTWEEN
 			DOTween.Kill(GetInstanceID());
