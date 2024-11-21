@@ -23,6 +23,26 @@ namespace RCore.Data.JObject
 
 			(sessionData, sessionDataHandler) = CreateModule<SessionData, SessionDataHandler, JObjectsCollection>("SessionData");
 		}
+		
+		public virtual void Save()
+		{
+			if (handlers == null)
+				return;
+			int utcNowTimestamp = TimeHelper.GetNowTimestamp(true);
+			foreach (var handler in handlers)
+				handler.OnPreSave(utcNowTimestamp);
+			foreach (var collection in datas)
+				collection.Save();
+		}
+
+		public virtual void Import(string data)
+		{
+			if (datas == null)
+				return;
+			datas.Import(data);
+			foreach (var collection in datas)
+				collection.Load();
+		}
 
 		protected TCollection CreateCollection<TCollection>(string key, TCollection defaultVal = null)
 			where TCollection : JObjectData, new()
