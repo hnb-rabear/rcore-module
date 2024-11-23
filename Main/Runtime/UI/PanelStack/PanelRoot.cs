@@ -19,6 +19,7 @@ namespace RCore.UI
 			EventDispatcher.AddListener<PushPanelToTopEvent>(OnPushPanelToTop);
 			EventDispatcher.AddListener<PushPanelEvent>(OnPushPanel);
 			EventDispatcher.AddListener<PushPanelToQueueEvent>(OnPushPanelToQueue);
+			EventDispatcher.AddListener<PushInterPanelEvent>(OnPushInterPanel);
 		}
 
 		protected virtual void OnDisable()
@@ -26,6 +27,7 @@ namespace RCore.UI
 			EventDispatcher.RemoveListener<PushPanelToTopEvent>(OnPushPanelToTop);
 			EventDispatcher.RemoveListener<PushPanelEvent>(OnPushPanel);
 			EventDispatcher.RemoveListener<PushPanelToQueueEvent>(OnPushPanelToQueue);
+			EventDispatcher.RemoveListener<PushInterPanelEvent>(OnPushInterPanel);
 		}
 
 		private void OnValidate()
@@ -138,7 +140,7 @@ namespace RCore.UI
 
 		protected void OnPushPanelToTop(PushPanelToTopEvent e)
 		{
-			if (e.rootId != GetType().Name)
+			if (e.rootType != GetType().Name)
 				return;
 			PushPanelToTop(ref e.panel);
 		}
@@ -146,17 +148,19 @@ namespace RCore.UI
 		
 		private void OnPushPanel(PushPanelEvent e)
 		{
-			if (e.rootId != GetType().Name)
+			if (e.rootType != GetType().Name)
 				return;
 			PushPanel(ref e.panel, e.keepCurrentInStack);
 		}
 		
 		private void OnPushPanelToQueue(PushPanelToQueueEvent e)
 		{
-			if (e.rootId != GetType().Name)
+			if (e.rootType != GetType().Name)
 				return;
 			AddPanelToQueue(ref e.panel);
 		}
+		
+		protected abstract void OnPushInterPanel()
 		
 		//======================================================
 
@@ -170,11 +174,11 @@ namespace RCore.UI
 	
 	public class PushPanelToTopEvent : BaseEvent
 	{
-		public string rootId;
+		public string rootType;
 		public PanelController panel;
 		public PushPanelToTopEvent(System.Type root, PanelController pPanel, object pValue = null)
 		{
-			rootId = root.Name;
+			rootType = root.Name;
 			panel = pPanel;
 		}
 	}
@@ -188,5 +192,18 @@ namespace RCore.UI
 	public class PushPanelToQueueEvent : PushPanelToTopEvent
 	{
 		public PushPanelToQueueEvent(System.Type root, PanelController pPanel, object pValue = null) : base(root, pPanel, pValue) { }
+	}
+
+	public class PushInterPanelEvent : BaseEvent
+	{
+		public string rootType;
+		public string panelType;
+		public PanelStack.PushType pushType;
+		public bool keepCurrentAndReplace;
+		public PushInterPanelEvent(System.Type root, System.Type pPanel)
+		{
+			rootType = root.Name;
+			panelType = pPanel.Name;
+		}
 	}
 }

@@ -13,6 +13,13 @@ namespace RCore.UI
 {
 	public abstract class PanelStack : MonoBehaviour
 	{
+		public enum PushType
+		{
+			OnTop,
+			Replacement,
+			Queued,
+		}
+
 		internal Stack<PanelController> panelStack = new Stack<PanelController>();
 		internal PanelStack parentPanel;
 
