@@ -8,11 +8,25 @@ using UnityEngine.UI;
 
 namespace RCore.UI
 {
-	public class PanelRoot : PanelStack
+	public abstract class PanelRoot : PanelStack
 	{
 		[SerializeField] private Button m_dimmerOverlay;
 
 		private readonly List<PanelController> m_panelsInQueue = new List<PanelController>();
+
+		protected virtual void OnEnable()
+		{
+			EventDispatcher.AddListener<PushPanelToTopEvent>(OnPushPanelToTop);
+			EventDispatcher.AddListener<PushPanelEvent>(OnPushPanel);
+			EventDispatcher.AddListener<PushPanelToQueueEvent>(OnPushPanelToQueue);
+		}
+
+		protected virtual void OnDisable()
+		{
+			EventDispatcher.RemoveListener<PushPanelToTopEvent>(OnPushPanelToTop);
+			EventDispatcher.RemoveListener<PushPanelEvent>(OnPushPanel);
+			EventDispatcher.RemoveListener<PushPanelToQueueEvent>(OnPushPanelToQueue);
+		}
 
 		private void OnValidate()
 		{
@@ -122,11 +136,57 @@ namespace RCore.UI
 			return button;
 		}
 
+		protected void OnPushPanelToTop(PushPanelToTopEvent e)
+		{
+			if (e.rootId != GetType().Name)
+				return;
+			PushPanelToTop(ref e.panel);
+		}
+		
+		
+		private void OnPushPanel(PushPanelEvent e)
+		{
+			if (e.rootId != GetType().Name)
+				return;
+			PushPanel(ref e.panel, e.keepCurrentInStack);
+		}
+		
+		private void OnPushPanelToQueue(PushPanelToQueueEvent e)
+		{
+			if (e.rootId != GetType().Name)
+				return;
+			AddPanelToQueue(ref e.panel);
+		}
+		
 		//======================================================
 
 #if UNITY_EDITOR
 		[CustomEditor(typeof(PanelRoot), true)]
 		public class PanelRootEditor : PanelStackEditor { }
 #endif
+	}
+	
+	//======================================================
+	
+	public class PushPanelToTopEvent : BaseEvent
+	{
+		public string rootId;
+		public PanelController panel;
+		public PushPanelToTopEvent(System.Type root, PanelController pPanel, object pValue = null)
+		{
+			rootId = root.Name;
+			panel = pPanel;
+		}
+	}
+	
+	public class PushPanelEvent : PushPanelToTopEvent
+	{
+		public bool keepCurrentInStack;
+		public PushPanelEvent(System.Type root, PanelController pPanel, object pValue = null) : base(root, pPanel, pValue) { }
+	}
+	
+	public class PushPanelToQueueEvent : PushPanelToTopEvent
+	{
+		public PushPanelToQueueEvent(System.Type root, PanelController pPanel, object pValue = null) : base(root, pPanel, pValue) { }
 	}
 }

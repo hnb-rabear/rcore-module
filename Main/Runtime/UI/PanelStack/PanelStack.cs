@@ -11,7 +11,7 @@ using UnityEngine;
 
 namespace RCore.UI
 {
-	public class PanelStack : MonoBehaviour
+	public abstract class PanelStack : MonoBehaviour
 	{
 		internal Stack<PanelController> panelStack = new Stack<PanelController>();
 		internal PanelStack parentPanel;
