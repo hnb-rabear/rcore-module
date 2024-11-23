@@ -209,6 +209,10 @@ namespace RCore.UI
 	
 	//======================================================
 	
+	/// <summary>
+	/// Example of dispatching an event:
+	/// EventDispatcher.Raise(new PushOuterPanelEvent(typeof(PanelHome), m_panelSettings));
+	/// </summary>
 	public class PushOuterPanelEvent : BaseEvent
 	{
 		public string rootType;
@@ -224,6 +228,10 @@ namespace RCore.UI
 		}
 	}
 
+	/// <summary>
+	/// Example of dispatching an event:
+	/// EventDispatcher.Raise(new PushInterPanelEvent(typeof(PanelHome), typeof(PanelSettings)));
+	/// </summary>
 	public class PushInterPanelEvent : BaseEvent
 	{
 		public string rootType;
@@ -240,6 +248,10 @@ namespace RCore.UI
 		}
 	}
 
+	/// <summary>
+	/// Example of dispatching an event:
+	/// EventDispatcher.Raise(new RequestPanelPushEvent(typeof(PanelHome), typeof(PopupRewardChest), rewards));
+	/// </summary>
 	public class RequestPanelPushEvent : BaseEvent
 	{
 		public string rootType;
