@@ -19,12 +19,14 @@ namespace RCore.UI
 		{
 			EventDispatcher.AddListener<PushOuterPanelEvent>(OnPushOuterPanel);
 			EventDispatcher.AddListener<PushInterPanelEvent>(OnPushInterPanel);
+			EventDispatcher.AddListener<RequestPanelPushEvent>(OnRequestPanelPush);
 		}
 
 		protected virtual void OnDisable()
 		{
 			EventDispatcher.RemoveListener<PushOuterPanelEvent>(OnPushOuterPanel);
 			EventDispatcher.RemoveListener<PushInterPanelEvent>(OnPushInterPanel);
+			EventDispatcher.RemoveListener<RequestPanelPushEvent>(OnRequestPanelPush);
 		}
 
 		private void OnValidate()
@@ -183,11 +185,19 @@ namespace RCore.UI
 						e.panel = AddPanelToQueue(ref panelController);
 						break;
 				}
-					
 			}
 			else
 				Debug.LogError($"Property or field of type {e.panelType} not found in {GetType().Name}.");
 		}
+		
+		private void OnRequestPanelPush(RequestPanelPushEvent e)
+		{
+			if (e.rootType != GetType().FullName)
+				return;
+			OnRequestPanelPush(e.panelType, e.value);
+		}
+
+		protected abstract void OnRequestPanelPush(string panelTypeFullName, object eValue);
 		
 		//======================================================
 
@@ -227,6 +237,19 @@ namespace RCore.UI
 			panelType = pPanel.FullName;
 			pushMode = pPushMode;
 			keepCurrentAndReplace = pKeepCurrentAndReplace;
+		}
+	}
+
+	public class RequestPanelPushEvent : BaseEvent
+	{
+		public string rootType;
+		public string panelType;
+		public object value;
+		public RequestPanelPushEvent(Type root, Type pPanel, object pValue = null)
+		{
+			rootType = root.FullName;
+			panelType = pPanel.FullName;
+			value = pValue;
 		}
 	}
 }
