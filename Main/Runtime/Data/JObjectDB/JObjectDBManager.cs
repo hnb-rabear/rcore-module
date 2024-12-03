@@ -18,6 +18,7 @@ namespace RCore.Data.JObject
 		protected float m_saveDelayCustom;
 		protected float m_lastSave;
 		protected int m_pauseState = -1;
+		protected bool m_enableAutoSave = true;
 
 		public bool Initialzied => m_initialized;
 		public T DataCollection => m_dataCollection;
@@ -51,7 +52,7 @@ namespace RCore.Data.JObject
 				offlineSeconds = GetOfflineSeconds();
 			foreach (var handler in m_dataCollection.handlers)
 				handler.OnPause(pause, utcNowTimestamp, offlineSeconds);
-			if (pause && m_saveOnPause)
+			if (pause && m_saveOnPause && m_enableAutoSave)
 				Save(true);
 		}
 
@@ -62,7 +63,7 @@ namespace RCore.Data.JObject
 
 		protected virtual void OnApplicationQuit()
 		{
-			if (m_initialized && m_saveOnQuit)
+			if (m_initialized && m_saveOnQuit && m_enableAutoSave)
 				Save(true);
 		}
 
@@ -127,6 +128,11 @@ namespace RCore.Data.JObject
 		public virtual void EnableSave(bool value)
 		{
 			m_enabledSave = value;
+		}
+
+		protected void EnableAutoSave(bool pValue)
+		{
+			m_enableAutoSave = pValue;
 		}
 
 		public virtual int GetOfflineSeconds()
