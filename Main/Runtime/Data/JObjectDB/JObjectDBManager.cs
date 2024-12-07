@@ -1,35 +1,39 @@
 using UnityEngine;
-using UnityEngine.Serialization;
 using System;
+using RCore.Inspector;
 
 namespace RCore.Data.JObject
 {
-	public abstract class JObjectDBManager<T> : MonoBehaviour where T : JObjectsCollection
+	public abstract class JObjectDBManager<T> : MonoBehaviour where T : JObjectDataCollection
 	{
 		public Action onInitialized;
-		[SerializeField] protected T m_dataCollection;
+		[SerializeField, AutoFill] protected T m_dataCollection;
 		[SerializeField, Range(1, 10)] protected int m_saveDelay = 3;
 		[SerializeField] protected bool m_enabledSave = true;
 		[SerializeField] protected bool m_saveOnPause = true;
 		[SerializeField] protected bool m_saveOnQuit = true;
-
+		
 		protected bool m_initialized;
 		protected float m_saveCountdown;
 		protected float m_saveDelayCustom;
 		protected float m_lastSave;
 		protected int m_pauseState = -1;
 		protected bool m_enableAutoSave = true;
-
+		
 		public bool Initialzied => m_initialized;
+
 		public T DataCollection => m_dataCollection;
 
+		//============================================================================
+		// MonoBehaviour
+		//============================================================================
+		
 		protected virtual void Update()
 		{
 			if (!m_initialized)
 				return;
 
-			foreach (var handler in m_dataCollection.handlers)
-				handler.OnUpdate(Time.deltaTime);
+			m_dataCollection.OnUpdate(Time.deltaTime);
 
 			//Save with a delay to prevent too many save calls in a short period of time
 			if (m_saveCountdown > 0)
@@ -50,8 +54,9 @@ namespace RCore.Data.JObject
 			int offlineSeconds = 0;
 			if (!pause)
 				offlineSeconds = GetOfflineSeconds();
-			foreach (var handler in m_dataCollection.handlers)
-				handler.OnPause(pause, utcNowTimestamp, offlineSeconds);
+
+			m_dataCollection.OnPause(pause, utcNowTimestamp, offlineSeconds);
+
 			if (pause && m_saveOnPause && m_enableAutoSave)
 				Save(true);
 		}
@@ -70,10 +75,7 @@ namespace RCore.Data.JObject
 		//============================================================================
 		// Public / Internal
 		//============================================================================
-
-		/// <summary>
-		/// Initialize DB Manager
-		/// </summary>
+		
 		public virtual void Init()
 		{
 			if (m_initialized)
@@ -117,11 +119,7 @@ namespace RCore.Data.JObject
 		{
 			if (!m_enabledSave)
 				return;
-
 			m_dataCollection.Import(data);
-			m_dataCollection.datas.Import(data);
-			foreach (var collection in m_dataCollection.datas)
-				collection.Load();
 			PostLoad();
 		}
 
@@ -154,8 +152,7 @@ namespace RCore.Data.JObject
 		{
 			int offlineSeconds = GetOfflineSeconds();
 			var utcNowTimestamp = TimeHelper.GetNowTimestamp(true);
-			foreach (var handler in m_dataCollection.handlers)
-				handler.OnPostLoad(utcNowTimestamp, offlineSeconds);
+			m_dataCollection.OnPostLoad(utcNowTimestamp, offlineSeconds);
 		}
 	}
 }
