@@ -15,7 +15,7 @@ namespace RCore.UI
 		public void OnStart();
 		public void OnFinish();
 	}
-
+    
 	public class UICircleArranger : MonoBehaviour
 	{
 		public float radius = 500f;
@@ -156,7 +156,7 @@ namespace RCore.UI
 				// moveSequence.Play();
 			}
 		}
-
+		
 		private IEnumerator MoveToPosition(RectTransform target, Vector3[] positions, Quaternion[] rotations, int endIndex)
 		{
 			float timePerStep = tweenDuration / positions.Length;
