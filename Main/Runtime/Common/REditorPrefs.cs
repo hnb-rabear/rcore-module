@@ -1,6 +1,7 @@
-/**
+#if UNITY_EDITOR
+/***
  * Author HNB-RaBear - 2021
- **/
+ ***/
 
 using System;
 using System.Collections.Generic;
@@ -8,7 +9,7 @@ using Newtonsoft.Json;
 using UnityEditor;
 using UnityEngine;
 
-namespace RCore.Editor
+namespace RCore
 {
 	[InitializeOnLoad]
 	public static class REditorPrefContainer
@@ -28,17 +29,17 @@ namespace RCore.Editor
 				m_REditorPrefs[i].Delete();
 		}
 		public static void Register(REditorPref pChange)
-        {
-            for (int i = 0; i < m_REditorPrefs.Count; i++)
-            {
-                if (m_REditorPrefs[i].key == pChange.key)
-                {
-                    m_REditorPrefs[i] = pChange;
-                    return;
-                }
-            }
-            m_REditorPrefs.Add(pChange);
-        }
+		{
+			for (int i = 0; i < m_REditorPrefs.Count; i++)
+			{
+				if (m_REditorPrefs[i].key == pChange.key)
+				{
+					m_REditorPrefs[i] = pChange;
+					return;
+				}
+			}
+			m_REditorPrefs.Add(pChange);
+		}
 		public static void SaveChanges()
 		{
 			for (int i = 0; i < m_REditorPrefs.Count; i++)
@@ -81,6 +82,7 @@ namespace RCore.Editor
 		{
 			m_value = EditorPrefs.GetInt(pKey, pDefault ? 1 : 0) == 1;
 		}
+		public REditorPrefBool(int pKey, bool pDefault = false) : this(pKey.ToString(), pDefault) { }
 		public override string ToString()
 		{
 			return m_value.ToString();
@@ -143,6 +145,7 @@ namespace RCore.Editor
 		{
 			m_value = EditorPrefs.GetFloat(pKey, pDefault);
 		}
+		public REditorPrefFloat(int pKey, float pDefault = 0) : this(pKey.ToString(), pDefault) { }
 		public override string ToString()
 		{
 			return m_value.ToString();
@@ -156,7 +159,7 @@ namespace RCore.Editor
 		}
 	}
 
-    [Obsolete]
+	[Obsolete]
 	public class REditorPrefDateTime : REditorPref
 	{
 		private DateTime m_value;
@@ -198,6 +201,7 @@ namespace RCore.Editor
 		{
 			m_value = EditorPrefs.GetString(pKey, pDefault);
 		}
+		public REditorPrefString(int pKey, string pDefault = "") : this(pKey.ToString(), pDefault) { }
 		public override string ToString()
 		{
 			return m_value;
@@ -348,7 +352,7 @@ namespace RCore.Editor
 			changed = true;
 		}
 	}
-	
+
 	public class REditorPrefObject<T> : REditorPref
 	{
 		public T value;
@@ -384,10 +388,10 @@ namespace RCore.Editor
 	public class REditorPrefSerializableObject<T> : REditorPref
 	{
 		public T value;
-        private bool m_encrypted;
+		private bool m_encrypted;
 		public REditorPrefSerializableObject(string pKey, bool pEncrypted, T pDefault) : base(pKey)
 		{
-            m_encrypted = pEncrypted;
+			m_encrypted = pEncrypted;
 			value = pDefault;
 			key = pEncrypted ? Encryption.Singleton.Encrypt(pKey) : pKey;
 
@@ -407,10 +411,84 @@ namespace RCore.Editor
 		}
 		public override void SaveChange()
 		{
-            var json = JsonUtility.ToJson(value);
-            if (m_encrypted)
-                json = Encryption.Singleton.Encrypt(json);
-            EditorPrefs.SetString(key, json);
+			var json = JsonUtility.ToJson(value);
+			if (m_encrypted)
+				json = Encryption.Singleton.Encrypt(json);
+			EditorPrefs.SetString(key, json);
+		}
+	}
+
+	public class REditorPrefEnum<T> : REditorPref where T : System.Enum
+	{
+		private T m_value;
+		public T Value
+		{
+			get => m_value;
+			set
+			{
+				if (EqualityComparer<T>.Default.Equals(m_value, value))
+					return;
+				m_value = value;
+				changed = true;
+			}
+		}
+		public REditorPrefEnum(string pKey, T pDefault = default) : base(pKey)
+		{
+			int defaultValue = Convert.ToInt32(pDefault);
+			m_value = (T)Enum.ToObject(typeof(T), EditorPrefs.GetInt(pKey, defaultValue));
+		}
+		public REditorPrefEnum(int pKey, T pDefault = default) : this(pKey.ToString(), pDefault) { }
+		public override string ToString()
+		{
+			return m_value.ToString();
+		}
+		public override void SaveChange()
+		{
+			if (!changed) return;
+			EditorPrefs.SetInt(key, Convert.ToInt32(m_value));
+			changed = false;
+		}
+	}
+
+	public class REditorPrefVector : REditorPref
+	{
+		private Vector3 m_value;
+		public Vector3 Value
+		{
+			get => m_value;
+			set
+			{
+				if (m_value == value)
+					return;
+				m_value = value;
+				changed = true;
+			}
+		}
+
+		public REditorPrefVector(string pKey, Vector3 pDefault = default) : base(pKey)
+		{
+			m_value = new Vector3(
+				EditorPrefs.GetFloat($"{pKey}_x", pDefault.x),
+				EditorPrefs.GetFloat($"{pKey}_y", pDefault.y),
+				EditorPrefs.GetFloat($"{pKey}_z", pDefault.z)
+			);
+		}
+		public REditorPrefVector(int pKey, Vector3 pDefault = default) : this(pKey.ToString(), pDefault) { }
+
+		public override string ToString()
+		{
+			return m_value.ToString();
+		}
+
+		public override void SaveChange()
+		{
+			if (!changed)
+				return;
+			EditorPrefs.SetFloat($"{key}_x", m_value.x);
+			EditorPrefs.SetFloat($"{key}_y", m_value.y);
+			EditorPrefs.SetFloat($"{key}_z", m_value.z);
+			changed = false;
 		}
 	}
 }
+#endif
