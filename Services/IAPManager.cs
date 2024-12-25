@@ -30,13 +30,13 @@ namespace RCore.Service
 
 		public static Action<Product> OnIAPSucceed;
 		public static Action<Product, string> OnIAPFailed;
+		private Action<bool> m_onInitialized;
 		private Action<Product> m_onPurchaseDeferred;
 		private Action<Product> m_onPurchaseFailed;
 		private Action<Product> m_onPurchaseSucceed;
 		private IStoreController m_storeController;
 		private IAppleExtensions m_appleExtensions;
 		private IGooglePlayStoreExtensions m_googlePlayStoreExtensions;
-		private Action<bool> m_onInitialized;
 		private bool m_initialized;
 		private CrossPlatformValidator m_validator;
 		private RPlayerPrefDict<string, string> m_cacheLocalizedPrices;
