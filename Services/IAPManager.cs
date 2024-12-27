@@ -73,6 +73,7 @@ namespace RCore.Service
 		{
 			OnInitializeFailed(error, null);
 		}
+
 		public void OnInitializeFailed(InitializationFailureReason error, string message)
 		{
 			m_onInitialized?.Invoke(false);
