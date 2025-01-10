@@ -101,6 +101,7 @@ namespace RCore.Inspector
 						EditorGUI.PropertyField(new Rect(position.x + PADDING, position.y, position.width - PADDING * 2, position.height), prop, true);
 					}
 				}
+				serializedObject.ApplyModifiedProperties();
 			}
 
 			EditorGUI.EndProperty();
