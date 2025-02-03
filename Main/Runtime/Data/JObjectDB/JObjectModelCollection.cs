@@ -13,6 +13,7 @@ namespace RCore.Data.JObject
 	public class JObjectModelCollection : ScriptableObject
 	{
 		[AutoFill] public SessionModel session;
+		[AutoFill] public IdentityModel identity;
 
 		private List<IJObjectModel> m_models;
 
@@ -21,6 +22,7 @@ namespace RCore.Data.JObject
 			m_models = new List<IJObjectModel>();
 
 			CreateModel(session, "SessionData");
+			CreateModel(identity, "Identity");
 		}
 
 		public virtual void Save()
@@ -73,6 +75,35 @@ namespace RCore.Data.JObject
 			@ref.Init();
 			m_models.Add(@ref);
 		}
+		
+		public CloudData CreateDataUpload()
+		{
+			var cloudData = new CloudData
+			{
+				session = this.session.data.SessionsTotal,
+				playTime = this.session.data.activeTime,
+				lastActive = this.session.data.lastActive,
+				deviceId = this.identity.data.deviceId,
+				gpgsId = this.identity.data.gpgsId,
+				level = this.identity.data.level,
+				data = JObjectDB.ToJson()
+			};
+			return cloudData;
+		}
+	}
+	
+	//===============================================================
+	
+	[Serializable]
+	public class CloudData
+	{
+		public string deviceId;
+		public string gpgsId;
+		public float playTime;
+		public int session;
+		public int lastActive;
+		public int level;
+		public string data;
 	}
 
 	//===============================================================
