@@ -76,9 +76,9 @@ namespace RCore.Data.JObject
 			m_models.Add(@ref);
 		}
 		
-		public CloudData CreateDataUpload()
+		public CloudSave CreateCloudSave()
 		{
-			var cloudData = new CloudData
+			var cloudData = new CloudSave
 			{
 				session = this.session.data.SessionsTotal,
 				playTime = this.session.data.activeTime,
@@ -95,7 +95,7 @@ namespace RCore.Data.JObject
 	//===============================================================
 	
 	[Serializable]
-	public class CloudData
+	public class CloudSave
 	{
 		public string deviceId;
 		public string gpgsId;
