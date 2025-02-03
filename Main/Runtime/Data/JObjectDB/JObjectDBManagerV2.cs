@@ -10,7 +10,6 @@ namespace RCore.Data.JObject
 		public Action onInitialized;
 		[SerializeField, CreateScriptableObject, AutoFill] protected T m_dataCollection;
 		[SerializeField, Range(1, 10)] protected int m_saveDelay = 3;
-		[SerializeField, Range(60, 120)] protected int m_minUploadInterval;
 		[SerializeField] protected bool m_enabledSave = true;
 		[SerializeField] protected bool m_saveOnPause = true;
 		[SerializeField] protected bool m_saveOnQuit = true;
