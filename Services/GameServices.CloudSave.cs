@@ -295,8 +295,9 @@ namespace RCore.Service
 		}
 #elif UNITY_IOS
 #else
+		public static bool Authenticated => false;
 		public static void ShowSelectSavedGameUI(string uiTitle, Action<ISavedGameMetadata, SelectUIStatus> p) => p?.Invoke(null, SelectUIStatus.AuthenticationError);
-		public static void UploadSavedGame(string jsonData, float totalPlayTime, Action<bool> p) => p?.Invoke(false);
+		public static void UploadSavedGame(string jsonData, float totalPlayTime, Action<bool> p = null) => p?.Invoke(false);
 		public static void UploadSavedGame(string pFileName, string pContent, float pTotalPlayTime, Action<bool> pCallback = null) => pCallback?.Invoke(false);
 		public static void DownloadSavedGame(string pFileName, Action<bool, string> pCallback = null) => pCallback?.Invoke(false, null);
 		public static void DownloadSavedGame(Action<bool, string> p) => p?.Invoke(false, null);
