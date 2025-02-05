@@ -15,7 +15,7 @@ namespace RCore.Data.JObject
 		[AutoFill] public SessionModel session;
 		[AutoFill] public IdentityModel identity;
 
-		private List<IJObjectModel> m_models;
+		private List<IJObjectModel> m_models = new();
 
 		public virtual void Load()
 		{
