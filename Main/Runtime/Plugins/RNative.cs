@@ -94,56 +94,75 @@ namespace RCore
 #elif UNITY_IOS && !UNITY_EDITOR
 		[DllImport("__Internal")]
 		public static extern long getSecondsSinceBoot();
-        public static long getMillisSinceBoot()
-        {
-            return getSecondsSinceBoot() * 1000;
-        }
-        public static string getMarketLink(string pAppId)
-        {
-            return "itms-apps://itunes.apple.com/app/id" + pAppId;
-        }
-        // Declare external functions
-        [DllImport("__Internal")]
-        private static extern void saveStringToiCloud(string key, string value, IntPtr callback);
-        [DllImport("__Internal")]
-        private static extern void retrieveStringFromiCloud(string key, IntPtr callback);
-        private delegate void SaveStringCallback(IntPtr error);
-        private delegate void RetrieveStringCallback(string value, string error);
-        public static void SaveStringToiCloud(string key, string value, Action<string> callback)
-        {
-	        try
-	        {
-		        SaveStringCallback internalCallback = (error) =>
-		        {
-			        string errorMsg = Marshal.PtrToStringAuto(error);
-			        callback(errorMsg);
-		        };
-		        IntPtr callbackPtr = Marshal.GetFunctionPointerForDelegate(internalCallback);
-		        saveStringToiCloud(key, value, callbackPtr);
-	        }
-	        catch (Exception ex)
-	        {
-		        UnityEngine.Debug.LogError(ex);
+		public static long getMillisSinceBoot()
+		{
+			return getSecondsSinceBoot() * 1000;
+		}
+		public static string getMarketLink(string pAppId)
+		{
+			return "itms-apps://itunes.apple.com/app/id" + pAppId;
+		}
+		[DllImport("__Internal")]
+		private static extern void saveStringToiCloud(string key, string value, IntPtr callback);
+		[DllImport("__Internal")]
+		private static extern void retrieveStringFromiCloud(string key, IntPtr callback);
+		[DllImport("__Internal")]
+		private static extern void checkiCloudAuthentication(IntPtr callback);
+		private delegate void SaveStringCallback(IntPtr error);
+		private delegate void RetrieveStringCallback(string value, string error);
+		private delegate void CheckiCloudAuthenticationCallback(bool authenticated, string error);
+		public static void SaveStringToiCloud(string key, string value, Action<string> callback)
+		{
+			try
+			{
+				SaveStringCallback internalCallback = (error) =>
+				{
+					string errorMsg = Marshal.PtrToStringAuto(error);
+					callback(errorMsg);
+				};
+				IntPtr callbackPtr = Marshal.GetFunctionPointerForDelegate(internalCallback);
+				saveStringToiCloud(key, value, callbackPtr);
+			}
+			catch (Exception e)
+			{
+				UnityEngine.Debug.LogError(e);
 				callback?.Invoke(null);
-	        }
-        }
-        public static void RetrieveStringFromiCloud(string key, Action<string, string> callback)
-        {
-	        try
-	        {
-		        RetrieveStringCallback internalCallback = (value, error) =>
-		        {
-			        callback(value, error);
-		        };
-		        IntPtr callbackPtr = Marshal.GetFunctionPointerForDelegate(internalCallback);
-		        retrieveStringFromiCloud(key, callbackPtr);
-	        }
-	        catch (Exception ex)
-	        {
-		        UnityEngine.Debug.LogError(ex);
-		        callback?.Invoke(null, ex.ToString());
-	        }
-        }
+			}
+		}
+		public static void RetrieveStringFromiCloud(string key, Action<string, string> callback)
+		{
+			try
+			{
+				RetrieveStringCallback internalCallback = (value, error) =>
+				{
+					callback(value, error);
+				};
+				IntPtr callbackPtr = Marshal.GetFunctionPointerForDelegate(internalCallback);
+				retrieveStringFromiCloud(key, callbackPtr);
+			}
+			catch (Exception e)
+			{
+				UnityEngine.Debug.LogError(e);
+				callback?.Invoke(null, e.ToString());
+			}
+		}
+		public static void CheckiCloudAuthentication(Action<bool, string> callback)
+		{
+			try
+			{
+				CheckiCloudAuthenticationCallback internalCallback = (authenticated, error) =>
+				{
+					callback(authenticated, error);
+				};
+				IntPtr callbackPtr = Marshal.GetFunctionPointerForDelegate(internalCallback);
+				checkiCloudAuthentication(callbackPtr);
+			}
+			catch (Exception e)
+			{
+				UnityEngine.Debug.LogError(e);
+				callback?.Invoke(false, e.ToString());
+			}
+		}
 #else
 		public static long getSecondsSinceBoot()
 		{

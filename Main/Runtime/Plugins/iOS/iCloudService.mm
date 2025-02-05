@@ -4,6 +4,7 @@
 @interface iCloudService : NSObject
 + (void)saveStringToiCloud:(NSString *)key value:(NSString *)value completion:(void (^)(NSError *error))completion;
 + (void)retrieveStringFromiCloud:(NSString *)key completion:(void (^)(NSString *value, NSError *error))completion;
++ (void)checkiCloudAuthentication:(void (^)(BOOL authenticated, NSError *error))completion;
 @end
 
 @implementation iCloudService
@@ -45,6 +46,17 @@
             if (completion) {
                 completion(retrievedValue, nil);
             }
+        }
+    }];
+}
+
++ (void)checkiCloudAuthentication:(void (^)(BOOL authenticated, NSError *error))completion {
+    CKContainer *container = [CKContainer defaultContainer];
+    
+    [container accountStatusWithCompletionHandler:^(CKAccountStatus accountStatus, NSError *error) {
+        BOOL isAuthenticated = (accountStatus == CKAccountStatusAvailable);
+        if (completion) {
+            completion(isAuthenticated, error);
         }
     }];
 }
