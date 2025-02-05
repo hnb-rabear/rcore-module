@@ -4,7 +4,7 @@
 @interface iCloudService : NSObject
 + (void)saveStringToiCloud:(NSString *)key value:(NSString *)value completion:(void (^)(NSError *error))completion;
 + (void)retrieveStringFromiCloud:(NSString *)key completion:(void (^)(NSString *value, NSError *error))completion;
-+ (void)checkiCloudAuthentication:(void (^)(BOOL authenticated, NSError *error))completion;
++ (void)checkiCloudAuthentication:(void (^)(BOOL authenticated, NSString *error))completion;
 @end
 
 @implementation iCloudService
@@ -50,13 +50,14 @@
     }];
 }
 
-+ (void)checkiCloudAuthentication:(void (^)(BOOL authenticated, NSError *error))completion {
++ (void)checkiCloudAuthentication:(void (^)(BOOL authenticated, NSString *error))completion {
     CKContainer *container = [CKContainer defaultContainer];
     
     [container accountStatusWithCompletionHandler:^(CKAccountStatus accountStatus, NSError *error) {
         BOOL isAuthenticated = (accountStatus == CKAccountStatusAvailable);
+        NSString *errorString = error ? error.localizedDescription : nil;
         if (completion) {
-            completion(isAuthenticated, error);
+            completion(isAuthenticated, errorString);
         }
     }];
 }
