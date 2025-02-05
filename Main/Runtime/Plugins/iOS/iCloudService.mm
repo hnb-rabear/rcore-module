@@ -1,9 +1,14 @@
-#import "iCloudService.h"
+#import <Foundation/Foundation.h>
 #import <CloudKit/CloudKit.h>
+
+@interface iCloudService : NSObject
++ (void)saveStringToiCloud:(NSString *)key value:(NSString *)value completion:(void (^)(NSError *error))completion;
++ (void)retrieveStringFromiCloud:(NSString *)key completion:(void (^)(NSString *value, NSError *error))completion;
+@end
 
 @implementation iCloudService
 
-+ (void)saveStringToiCloud:(NSString *)key value:(NSString *)value {
++ (void)saveStringToiCloud:(NSString *)key value:(NSString *)value completion:(void (^)(NSError *error))completion {
     CKContainer *container = [CKContainer defaultContainer];
     CKDatabase *database = [container privateCloudDatabase];
     
@@ -16,6 +21,9 @@
             NSLog(@"Error saving to iCloud: %@", error.localizedDescription);
         } else {
             NSLog(@"Successfully saved to iCloud");
+        }
+        if (completion) {
+            completion(error);
         }
     }];
 }

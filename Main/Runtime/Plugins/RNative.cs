@@ -1,13 +1,6 @@
-﻿/***
- *  Created by hnim.
- *  Copyright (c) 2017 RedAntz. All rights reserved.
- */
-
-using System;
+﻿using System;
 using UnityEngine;
-#if UNITY_IOS
 using System.Runtime.InteropServices;
-#endif
 
 namespace RCore
 {
@@ -98,7 +91,7 @@ namespace RCore
 			args[0].l = AndroidJNI.NewStringUTF(pMessage);
 			AndroidJNI.CallStaticVoidMethod(class_RNative, method_showToast, args);
 		}
-#elif UNITY_IOS
+#elif UNITY_IOS || UNITY_EDITOR
 		[DllImport("__Internal")]
 		public static extern long getSecondsSinceBoot();
         public static long getMillisSinceBoot()
@@ -108,6 +101,32 @@ namespace RCore
         public static string getMarketLink(string pAppId)
         {
             return "itms-apps://itunes.apple.com/app/id" + pAppId;
+        }
+        // Declare external functions
+        [DllImport("__Internal")]
+        private static extern void saveStringToiCloud(string key, string value, IntPtr callback);
+        [DllImport("__Internal")]
+        private static extern void retrieveStringFromiCloud(string key, IntPtr callback);
+        private delegate void SaveStringCallback(IntPtr error);
+        private delegate void RetrieveStringCallback(string value, string error);
+        public static void SaveStringToiCloud(string key, string value, Action<string> callback)
+        {
+	        SaveStringCallback internalCallback = (error) =>
+	        {
+		        string errorMsg = Marshal.PtrToStringAuto(error);
+		        callback(errorMsg);
+	        };
+	        IntPtr callbackPtr = Marshal.GetFunctionPointerForDelegate(internalCallback);
+	        saveStringToiCloud(key, value, callbackPtr);
+        }
+        public static void RetrieveStringFromiCloud(string key, Action<string, string> callback)
+        {
+	        RetrieveStringCallback internalCallback = (value, error) =>
+	        {
+		        callback(value, error);
+	        };
+	        IntPtr callbackPtr = Marshal.GetFunctionPointerForDelegate(internalCallback);
+	        retrieveStringFromiCloud(key, callbackPtr);
         }
 #else
 		public static long getSecondsSinceBoot()

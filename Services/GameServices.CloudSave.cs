@@ -294,6 +294,35 @@ namespace RCore.Service
 				Debug.LogWarning("Error opening game: " + status);
 		}
 #elif UNITY_IOS
+		public static bool Authenticated => true;
+		public static void UploadSavedGame(string pFileName, string jsonData, Action<string> pCallback = null)
+		{
+			if (string.IsNullOrEmpty(pFileName))
+				pFileName = Application.productName;
+			RNative.SaveStringToiCloud(pFileName, jsonData, pCallback);
+		}
+		public static void UploadSavedGame(string jsonData, Action<string> pCallback = null)
+		{
+			UploadSavedGame(Application.productName, jsonData, pCallback);
+		}
+		public static void UploadSavedGame(string jsonData, float _ = 0, Action<string> pCallback = null)
+		{
+			UploadSavedGame(Application.productName, jsonData, pCallback);
+		}
+		public static void DownloadSavedGame(string pFileName, Action<string, string> pCallback = null)
+		{
+			if (string.IsNullOrEmpty(pFileName))
+				pFileName = Application.productName;
+			RNative.RetrieveStringFromiCloud(pFileName, pCallback);
+		}
+		public static void DownloadSavedGame(Action<string, string> pCallback = null)
+		{
+			DownloadSavedGame(Application.productName, pCallback);
+		}
+		public static void DownloadSavedGame(Action<bool, string> pCallback = null)
+		{
+			DownloadSavedGame(Application.productName, (value, error) => pCallback?.Invoke(!string.IsNullOrEmpty(error), value));
+		}
 #else
 		public static bool Authenticated => false;
 		public static void ShowSelectSavedGameUI(string uiTitle, Action<ISavedGameMetadata, SelectUIStatus> p) => p?.Invoke(null, SelectUIStatus.AuthenticationError);
@@ -303,6 +332,7 @@ namespace RCore.Service
 		public static void DownloadSavedGame(Action<bool, string> p) => p?.Invoke(false, null);
 		public static void DeleteSavedGame(ISavedGameMetadata data) { }
 		public static void DeleteSelectedSavedGame() { }
+
 		public interface ISavedGameMetadata
 		{
 			bool IsOpen { get; set; }
@@ -312,6 +342,7 @@ namespace RCore.Service
 			TimeSpan TotalTimePlayed { get; set; }
 			DateTime LastModifiedTimestamp { get; set; }
 		}
+
 		public enum SelectUIStatus
 		{
 			SavedGameSelected = 1,
