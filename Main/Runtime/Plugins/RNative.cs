@@ -91,7 +91,7 @@ namespace RCore
 			args[0].l = AndroidJNI.NewStringUTF(pMessage);
 			AndroidJNI.CallStaticVoidMethod(class_RNative, method_showToast, args);
 		}
-#elif UNITY_IOS || UNITY_EDITOR
+#elif UNITY_IOS && !UNITY_EDITOR
 		[DllImport("__Internal")]
 		public static extern long getSecondsSinceBoot();
         public static long getMillisSinceBoot()
@@ -111,22 +111,38 @@ namespace RCore
         private delegate void RetrieveStringCallback(string value, string error);
         public static void SaveStringToiCloud(string key, string value, Action<string> callback)
         {
-	        SaveStringCallback internalCallback = (error) =>
+	        try
 	        {
-		        string errorMsg = Marshal.PtrToStringAuto(error);
-		        callback(errorMsg);
-	        };
-	        IntPtr callbackPtr = Marshal.GetFunctionPointerForDelegate(internalCallback);
-	        saveStringToiCloud(key, value, callbackPtr);
+		        SaveStringCallback internalCallback = (error) =>
+		        {
+			        string errorMsg = Marshal.PtrToStringAuto(error);
+			        callback(errorMsg);
+		        };
+		        IntPtr callbackPtr = Marshal.GetFunctionPointerForDelegate(internalCallback);
+		        saveStringToiCloud(key, value, callbackPtr);
+	        }
+	        catch (Exception ex)
+	        {
+		        UnityEngine.Debug.LogError(ex);
+				callback?.Invoke(null);
+	        }
         }
         public static void RetrieveStringFromiCloud(string key, Action<string, string> callback)
         {
-	        RetrieveStringCallback internalCallback = (value, error) =>
+	        try
 	        {
-		        callback(value, error);
-	        };
-	        IntPtr callbackPtr = Marshal.GetFunctionPointerForDelegate(internalCallback);
-	        retrieveStringFromiCloud(key, callbackPtr);
+		        RetrieveStringCallback internalCallback = (value, error) =>
+		        {
+			        callback(value, error);
+		        };
+		        IntPtr callbackPtr = Marshal.GetFunctionPointerForDelegate(internalCallback);
+		        retrieveStringFromiCloud(key, callbackPtr);
+	        }
+	        catch (Exception ex)
+	        {
+		        UnityEngine.Debug.LogError(ex);
+		        callback?.Invoke(null, ex.ToString());
+	        }
         }
 #else
 		public static long getSecondsSinceBoot()

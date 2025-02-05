@@ -293,7 +293,7 @@ namespace RCore.Service
 			else
 				Debug.LogWarning("Error opening game: " + status);
 		}
-#elif UNITY_IOS
+#elif UNITY_IOS && !UNITY_EDITOR
 		public static bool Authenticated => true;
 		public static void UploadSavedGame(string pFileName, string jsonData, Action<string> pCallback = null)
 		{
