@@ -3,9 +3,11 @@
  **/
 
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace RCore
 {
@@ -619,6 +621,82 @@ namespace RCore
 			int weekNumber = calendar.GetWeekOfYear(date, weekRule, firstDayOfWeek);
 
 			return weekNumber;
+		}
+		
+		public static int CalcSecondsPassed(DateTime fromDate, DateTime toDate, List<DayOfWeek> includeDays, List<int> includeHours)
+		{
+			double validSeconds = 0;
+			while (fromDate < toDate)
+			{
+				// Check if the current day is an active day and the current hour is an active hour
+				if (includeDays.Contains(fromDate.DayOfWeek) && includeHours.Contains(fromDate.Hour))
+				{
+					// Calculate the end of the current hour
+					var endOfHour = fromDate.AddHours(1).AddMinutes(-fromDate.Minute).AddSeconds(-fromDate.Second).AddMilliseconds(-fromDate.Millisecond);
+					var nextTime = endOfHour < toDate ? endOfHour : toDate;
+
+					// Add valid seconds
+					validSeconds += (nextTime - fromDate).TotalSeconds;
+
+					// Move to the next period
+					fromDate = nextTime;
+				}
+				else
+				{
+					// Move to the next hour directly
+					fromDate = fromDate.AddHours(1).AddMinutes(-fromDate.Minute).AddSeconds(-fromDate.Second).AddMilliseconds(-fromDate.Millisecond);
+				}
+			}
+			return (int)validSeconds;
+		}
+		
+		public static List<DayOfWeek> GetRandomDayOfWeeks()
+		{
+			int range = Random.Range(1, 8);
+			var daysOfWeeks = new List<DayOfWeek>
+			{
+				DayOfWeek.Monday,
+				DayOfWeek.Tuesday,
+				DayOfWeek.Wednesday,
+				DayOfWeek.Thursday,
+				DayOfWeek.Friday,
+				DayOfWeek.Saturday,
+				DayOfWeek.Sunday,
+			};
+			// Fisher-Yates shuffle using UnityEngine.Random
+			int n = daysOfWeeks.Count;
+			for (int i = n - 1; i > 0; i--)
+			{
+				int j = Random.Range(0, i + 1);
+				var temp = daysOfWeeks[i];
+				daysOfWeeks[i] = daysOfWeeks[j];
+				daysOfWeeks[j] = temp;
+			}
+			// Take the first 'range' elements
+			return daysOfWeeks.GetRange(0, range);
+		}
+
+		public static int[] GetRandomHours(int pCount)
+		{
+			int[] allHours = new int[24];
+			for (int i = 0; i < 24; i++)
+				allHours[i] = i;
+
+			// Shuffle the array of hours using Fisher-Yates shuffle algorithm
+			for (int i = allHours.Length - 1; i > 0; i--)
+			{
+				int j = Random.Range(0, i + 1);  // Get a random index
+				// Swap elements at indices i and j
+				int temp = allHours[i];
+				allHours[i] = allHours[j];
+				allHours[j] = temp;
+			}
+
+			// Create a list to store the selected random hours
+			var hours = new int[pCount];
+			for (int i = 0; i < pCount; i++)
+				hours[i] = allHours[i];
+			return hours;
 		}
 	}
 
