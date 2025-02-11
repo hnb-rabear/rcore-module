@@ -464,8 +464,6 @@ namespace RCore
 			return positions;
 		}
 
-		private static readonly string[] m_Consonants = { "b", "c", "d", "f", "g", "h", "j", "k", "l", "m", "n", "p", "q", "r", "s", "t", "v", "w", "x", "y", "z" };
-		private static readonly string[] m_Vowels = { "a", "e", "i", "o", "u" };
 		private static readonly string[] m_MeaningfulNames = new[]
 		{
 			"Aria", "Kai", "Luna", "Leo", "Nina", "Zara",
@@ -486,41 +484,41 @@ namespace RCore
 			"Kaida", "Leander", "Mirabel", "Nyx", "Orla", "Phaedra",
 			"Quorra", "Rex", "Seraphina", "Thalia"
 		};
-		private static string GenerateStupidUserName(int syllables)
+
+		private static List<string> ExtractSyllables(string name)
 		{
-			string userName = "";
-			bool useConsonant = Random.value > 0.5f;
-			for (int i = 0; i < syllables; i++)
+			var syllables = new List<string>();
+			var matches = Regex.Matches(name, @"[bcdfghjklmnpqrstvwxyz]*[aeiouy]+", RegexOptions.IgnoreCase);
+
+			foreach (Match match in matches)
 			{
-				if (useConsonant)
-				{
-					userName += m_Consonants[Random.Range(0, m_Consonants.Length)];
-					useConsonant = false;
-				}
-				else
-				{
-					userName += m_Vowels[Random.Range(0, m_Vowels.Length)];
-					useConsonant = true;
-				}
+				syllables.Add(match.Value);
 			}
-			return char.ToUpper(userName[0]) + userName.Substring(1);
+
+			return syllables;
 		}
+
 		public static string GenerateUserName()
 		{
-			string userName = "";
-			if (Random.value < 0.3f) // Choose meaningful name
+			var allSyllables = new List<string>();
+
+			foreach (var name in m_MeaningfulNames)
+				allSyllables.AddRange(ExtractSyllables(name));
+
+			var sb = new StringBuilder();
+			int maxCharacters = 8;
+
+			while (sb.Length < maxCharacters)
 			{
-				userName = m_MeaningfulNames[Random.Range(0, m_MeaningfulNames.Length)];
-				if (Random.value < 0.2f && userName.Length <= 8)
-					userName += Random.Range(80, 100);
+				int index = Random.Range(0, allSyllables.Count);
+				string syllable = allSyllables[index];
+
+				if (sb.Length + syllable.Length > maxCharacters)
+					break;
+
+				sb.Append(syllable);
 			}
-			else
-			{
-				userName = GenerateStupidUserName(Random.Range(3, 7));
-				if (Random.value < 0.2f)
-					userName += Random.Range(80, 100);
-			}
-			return userName;
+			return sb.ToString().ToCapitalizeEachWord();
 		}
 	}
 
