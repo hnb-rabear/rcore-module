@@ -45,7 +45,7 @@ namespace RCore.UI
 			base.OnAnyChildHide(pPanel);
 
 			if (m_panelsInQueue.Count > 0 && !IsBusy() && !m_blockQueue)
-				StartCoroutine(IEPushPanelInQueue());
+				PushPanelInQueue();
 			else
 				ToggleDimmerOverlay();
 		}
@@ -88,6 +88,7 @@ namespace RCore.UI
 			var popupInQueue = CreatePanel(ref pPanel);
 			if (!m_panelsInQueue.Contains(pPanel))
 				m_panelsInQueue.Add(pPanel);
+			popupInQueue.FromQueue = true;
 			return popupInQueue;
 		}
 
@@ -98,13 +99,6 @@ namespace RCore.UI
 			var panel = m_panelsInQueue[0];
 			m_panelsInQueue.RemoveAt(0);
 			PushPanelToTop(ref panel);
-		}
-
-		private IEnumerator IEPushPanelInQueue()
-		{
-			yield return null;
-			yield return null;
-			PushPanelInQueue();
 		}
 
 		public void RemovePanelInQueue(PanelController pPanel)
