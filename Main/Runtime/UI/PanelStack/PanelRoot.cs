@@ -88,7 +88,6 @@ namespace RCore.UI
 			var popupInQueue = CreatePanel(ref pPanel);
 			if (!m_panelsInQueue.Contains(pPanel))
 				m_panelsInQueue.Add(pPanel);
-			popupInQueue.FromQueue = true;
 			return popupInQueue;
 		}
 
