@@ -50,7 +50,7 @@ namespace RCore
             return false;
 #endif
 		}
-		public async UniTask<TComponent> InternalInstantiateAsync(bool pDefaultActive = false)
+		public async UniTask<TComponent> InstantiateAsync(bool pDefaultActive = false)
 		{
 			m_operation = Addressables.InstantiateAsync(this);
 			var go = await m_operation;
@@ -59,7 +59,7 @@ namespace RCore
 			Debug.Log($"Instantiate Asset Bundle {instance.name}");
 			return instance;
 		}
-		public async UniTask<TComponent> InternalLoadAssetAsync()
+		public async UniTask<TComponent> LoadAssetAsync()
 		{
 			if (asset != null)
 				return asset;
@@ -69,7 +69,7 @@ namespace RCore
 			Debug.Log($"Load Asset Bundle {asset.name}");
 			return asset;
 		}
-		public IEnumerator IEInternalLoadAssetAsync()
+		public IEnumerator IELoadAsset()
 		{
 			if (asset != null)
 				yield break;
@@ -841,7 +841,7 @@ namespace RCore
 	[Serializable]
 	public class AssetBundleWithEnumKey<T, M> : AssetBundleRef<M> where T : Enum where M : Object
 	{
-		[FormerlySerializedAs("id")] public T key;
+		public T key;
 	}
 
 	[Serializable]
@@ -857,7 +857,7 @@ namespace RCore
 	[Serializable]
 	public class AssetBundleWithIntKey<M> : AssetBundleRef<M> where M : Object
 	{
-		[FormerlySerializedAs("id")] public int key;
+		public int key;
 	}
 
 #endif
