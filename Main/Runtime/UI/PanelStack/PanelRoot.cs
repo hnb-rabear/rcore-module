@@ -94,7 +94,10 @@ namespace RCore.UI
 		protected void AddPanelToQueue<T>(T pPanel) where T : PanelController
 		{
 			if (StackCount == 0)
+			{
 				PushPanelToTop(ref pPanel);
+				return;
+			}
 			if (!m_panelsInQueue.Contains(pPanel))
 				m_panelsInQueue.Add(pPanel);
 		}
