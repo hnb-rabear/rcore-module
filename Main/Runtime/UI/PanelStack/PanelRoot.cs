@@ -57,7 +57,7 @@ namespace RCore.UI
 			ToggleDimmerOverlay();
 		}
 
-		private void ToggleDimmerOverlay()
+		protected void ToggleDimmerOverlay()
 		{
 			if (m_dimmerOverlay == null)
 				m_dimmerOverlay = CreatDimmerOverlay();
@@ -93,6 +93,8 @@ namespace RCore.UI
 
 		protected void AddPanelToQueue<T>(T pPanel) where T : PanelController
 		{
+			if (StackCount == 0)
+				PushPanelToTop(ref pPanel);
 			if (!m_panelsInQueue.Contains(pPanel))
 				m_panelsInQueue.Add(pPanel);
 		}
