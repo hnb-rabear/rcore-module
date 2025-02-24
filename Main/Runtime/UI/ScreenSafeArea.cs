@@ -23,11 +23,11 @@ namespace RCore.UI
 			CheckSafeArea();
 		}
 
-		private void OnValidate()
-		{
-			if (Application.isPlaying)
-				CheckSafeArea();
-		}
+		// private void OnValidate()
+		// {
+		// 	if (Application.isPlaying)
+		// 		CheckSafeArea();
+		// }
 
 		[Button]
 		public void Log()
