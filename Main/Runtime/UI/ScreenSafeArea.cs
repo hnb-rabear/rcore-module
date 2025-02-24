@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Sirenix.OdinInspector;
+using System;
 using System.Collections;
 using UnityEngine;
 
@@ -7,6 +8,7 @@ namespace RCore.UI
 	public class ScreenSafeArea : MonoBehaviour
 	{
 		public static float topOffset;
+		public static float bottomOffset;
 		public Canvas canvas;
 		public RectTransform[] safeRects;
 		public bool fixedTop;
@@ -21,7 +23,13 @@ namespace RCore.UI
 			CheckSafeArea();
 		}
 
-		[InspectorButton]
+		private void OnValidate()
+		{
+			if (Application.isPlaying)
+				CheckSafeArea();
+		}
+
+		[Button]
 		public void Log()
 		{
 			var safeArea = Screen.safeArea;
@@ -31,25 +39,24 @@ namespace RCore.UI
 			var oHeightTop = (Screen.currentResolution.height - safeArea.height - safeArea.y) / 2f;
 			var oWidthBot = -safeArea.x / 2f;
 			var oHeightBot = -safeArea.y / 2f;
-			Debug.Log($"Screen size: (width:{sWidth}, height:{sHeight})" +
-				$"\nSafe area: {safeArea}" +
-				$"\nOffset Top: (width:{oWidthTop}, height:{oHeightTop})" +
-				$"\nOffset Bottom: (width:{oWidthBot}, height:{oHeightBot})");
+			Debug.Log($"Screen size: (width:{sWidth}, height:{sHeight})"
+				+ $"\nSafe area: {safeArea}"
+				+ $"\nOffset Top: (width:{oWidthTop}, height:{oHeightTop})"
+				+ $"\nOffset Bottom: (width:{oWidthBot}, height:{oHeightBot})");
 		}
 
-		private void OnValidate()
-		{
-			if (Application.isPlaying)
-				CheckSafeArea();
-		}
-
-		[InspectorButton]
-		public void CheckSafeArea()
+		private void CheckSafeArea()
 		{
 			var safeArea = Screen.safeArea;
 			safeArea.height -= topOffset;
 			var anchorMin = safeArea.position;
 			var anchorMax = safeArea.position + safeArea.size;
+			var sizeDelta = ((RectTransform)canvas.transform).sizeDelta;
+			sizeDelta.y = -bottomOffset;
+			((RectTransform)canvas.transform).sizeDelta = sizeDelta;
+			var position = ((RectTransform)canvas.transform).anchoredPosition;
+			position.y = bottomOffset / 2;
+			((RectTransform)canvas.transform).anchoredPosition = position;
 
 			anchorMin.x /= canvas.pixelRect.width;
 			anchorMin.y /= canvas.pixelRect.height;
@@ -72,10 +79,10 @@ namespace RCore.UI
 			m_CurrentSafeArea = Screen.safeArea;
 		}
 
-		public static void SetTopOffsetForBannerAd(float pBannerHeight, bool pPlaceInSafeArea = true) //150
+		public static void SetTopOffsetForBannerAd(float pBannerHeight, bool pPlaceInSafeArea = true)
 		{
 			float offset = 0;
-			var safeAreaHeightOffer = Screen.height - Screen.safeArea.height; //80
+			var safeAreaHeightOffer = Screen.height - Screen.safeArea.height;
 			if (!pPlaceInSafeArea)
 			{
 				if (pBannerHeight <= safeAreaHeightOffer)
@@ -98,6 +105,32 @@ namespace RCore.UI
 				component.StartCoroutine(component.IECheckSafeArea());
 		}
 
+		public static void SetBottomOffsetForBannerAd(float pBannerHeight, bool pPlaceInSafeArea = true)
+		{
+			float offset = 0;
+			var safeAreaHeightOffer = Screen.height - Screen.safeArea.height;
+			if (!pPlaceInSafeArea)
+			{
+				if (pBannerHeight <= safeAreaHeightOffer)
+					offset = 0;
+				else
+					offset = pBannerHeight - safeAreaHeightOffer;
+			}
+			else
+			{
+				offset = pBannerHeight;
+			}
+
+			if (bottomOffset == offset)
+				return;
+
+			bottomOffset = offset;
+
+			var screenSafeAreas = FindObjectsOfType<ScreenSafeArea>();
+			foreach (var component in screenSafeAreas)
+				component.StartCoroutine(component.IECheckSafeArea());
+		}
+
 		private IEnumerator IECheckSafeArea()
 		{
 			float time = 0.5f;
@@ -109,10 +142,10 @@ namespace RCore.UI
 			}
 		}
 
-		[InspectorButton]
-		private void TestTopOffsetForBannerAd()
-		{
-			SetTopOffsetForBannerAd(143);
-		}
+		[Button]
+		private void TestTopOffsetForBannerAd(int height) => SetTopOffsetForBannerAd(height);
+
+		[Button]
+		private void TestBottomOffsetForBannerAd(int height) => SetBottomOffsetForBannerAd(height);
 	}
 }
