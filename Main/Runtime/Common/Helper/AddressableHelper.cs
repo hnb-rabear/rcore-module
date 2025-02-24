@@ -32,6 +32,7 @@ namespace RCore
 	{
 		public TComponent instance;
 		public TComponent asset;
+		public bool loading;
 		private AsyncOperationHandle<GameObject> m_operation;
 		public ComponentRef(string guid) : base(guid) { }
 		
@@ -53,9 +54,11 @@ namespace RCore
 		public async UniTask<TComponent> InstantiateAsync(bool pDefaultActive = false)
 		{
 			m_operation = Addressables.InstantiateAsync(this);
+			loading = true;
 			var go = await m_operation;
 			go.SetActive(pDefaultActive);
 			go.TryGetComponent(out instance);
+			loading = false;
 			Debug.Log($"Instantiate Asset Bundle {instance.name}");
 			return instance;
 		}
@@ -64,7 +67,9 @@ namespace RCore
 			if (asset != null)
 				return asset;
 			var operation = IsValid() ? OperationHandle.Convert<GameObject>() : LoadAssetAsync<GameObject>();
+			loading = true;
 			await operation;
+			loading = false;
 			asset = operation.Result.GetComponent<TComponent>();
 			Debug.Log($"Load Asset Bundle {asset.name}");
 			return asset;
@@ -74,7 +79,9 @@ namespace RCore
 			if (asset != null)
 				yield break;
 			var operation = IsValid() ? OperationHandle.Convert<GameObject>() : LoadAssetAsync<GameObject>();
+			loading = true;
 			yield return operation;
+			loading = false;
 			asset = operation.Result.GetComponent<TComponent>();
 			Debug.Log($"Load Asset Bundle {asset.name}");
 		}
