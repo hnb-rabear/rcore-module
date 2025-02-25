@@ -464,43 +464,52 @@ namespace RCore
 			return positions;
 		}
 
-		private static readonly string[] m_MeaningfulSyllables = new[]
+		private static readonly string[] upperCaseFirstLetter = new[]
 		{
-			"A", "ria", "Kai", "Lu", "na", "Le", "o", "Ni", "na", "Za", "ra",
-			"Au", "ro", "ra", "Ca", "leb", "Dah", "lia", "E", "la", "ra", "Fe", "lix", "Gi", "selle",
-			"Hu", "go", "Is", "la", "Jas", "per", "Kie", "ra", "Li", "am", "Mi", "la",
-			"Ni", "co", "O", "ri", "on", "Pi", "per", "Quinn", "Rhe", "a", "Si", "las",
-			"The", "o", "U", "na", "Ve", "ra", "Wil", "low", "Xan", "der", "Ya", "ra", "Zane",
-			"A", "dri", "an", "Be", "a", "trix", "Cas", "si", "an", "De", "li", "lah", "Ez", "ra", "Frey", "a",
-			"Gid", "e", "on", "Ha", "zel", "I", "ris", "Jo", "nah", "Ki", "an", "Ly", "ra",
-			"Mag", "nus", "No", "elle", "Oc", "ta", "via", "Phoe", "nix", "Ro", "wan", "Sien", "na",
-			"To", "bi", "as", "U", "ma", "Va", "le", "ria", "Wren", "Xa", "vier", "Yas", "mine", "Zay", "den",
-			"As", "pen", "Bo", "dhi", "Ce", "leste", "Dan", "te", "E", "lio", "Fi", "o", "na",
-			"Grif", "fin", "Har", "low", "In", "di", "go", "Ju", "no", "Kai", "ros", "Li", "o", "ra",
-			"Mav", "er", "ick", "No", "va", "O", "be", "ron", "Per", "se", "pho", "ne", "Quen", "tin", "Ro", "nan",
-			"Se", "lene", "Ta", "lia", "U", "ri", "ah", "Ves", "per", "Wes", "ley", "Xy", "la",
-			"Yvette", "Zeph", "yr", "A", "lar", "ic", "Bri", "ar", "Cas", "pi", "an", "Daph", "ne",
-			"Em", "ber", "Fin", "ni", "an", "Ga", "ia", "Hal", "cy", "on", "Isol", "de", "Jace",
-			"Kai", "da", "Le", "an", "der", "Mi", "ra", "bel", "Nyx", "Or", "la", "Phae", "dra",
-			"Quor", "ra", "Rex", "Ser", "a", "phi", "na", "Thal", "ia"
+			"Al", "Kai", "Lu", "Le", "Ni", "Za",
+			"Au", "Ca", "Dah", "El", "Fe", "Gi",
+			"Hu", "Is", "Jas", "Kie", "Li", "Mi",
+			"Om", "Pi", "Quinn", "Rhe", "Si",
+			"The", "Un", "Ve", "Wil", "Xan", "Ya", "Zane",
+			"Be", "Cas", "De", "Ez", "Frey", "Gid",
+			"Ha", "Ir", "Jo", "Ki", "Ly", "Mag", "No",
+			"Oc", "Phoe", "Ro", "Sien", "To", "Va", "Wren",
+			"Xa", "Yas", "Zay", "As", "Bo", "Ce", "Dan",
+			"Fi", "Grif", "Har", "Ino", "Ju",
+			"Mav", "Per", "Quen", "Se", "Ta", "Ves", "Wes", "Xylo", "Yvette",
+			"Zeph", "Bri", "Daph", "Emi", "Fin",
+			"Ga", "Hal", "Isol", "Jace",
+			"Nyx", "Orl", "Phae", "Quor", "Rex",
+			"Ser", "Thal"
 		};
 
-		private static readonly StringBuilder m_Sb = new StringBuilder();
+		private static readonly string[] lowerCaseFirstLetter = new[]
+		{
+			"ria", "na", "on", "ra", "ro",
+			"leb", "lia", "la", "lix", "selle",
+			"go", "per", "am", "co",
+			"ri", "on", "as", "las",
+			"low", "der", "an", "trix", "si",
+			"li", "lah", "el", "zel",
+			"ris", "nah", "nus", "elle",
+			"ta", "via", "nix", "wan", "bi",
+			"as", "ma", "le", "vier", "mine",
+			"den", "pen", "dhi", "leste", "te", "lio",
+			"fin", "ros", "va", "ron", "se", "pho", "tin",
+			"nan", "lene", "ah", "per",
+			"ley", "lar", "ic", "ar", "pi",
+			"ne", "ber", "ni", "ia", "cy",
+			"de", "da", "der", "bel",
+			"dra", "phi"
+		};
+
 		public static string GenerateUserName()
 		{
-			m_Sb.Clear();
-			var syllables = m_MeaningfulSyllables;
-			int maxCharacters = 8;
-			while (m_Sb.Length < maxCharacters)
-			{
-				int index = Random.Range(0, syllables.Length);
-				string syllable = syllables[index];
-				if (m_Sb.Length + syllable.Length > maxCharacters)
-					break;
-				m_Sb.Append(syllable);
-			}
-			string userName = m_Sb.ToString();
-			return char.ToUpper(userName[0]) + userName.Substring(1).ToLower();
+			string firstPart = upperCaseFirstLetter[Random.Range(0, upperCaseFirstLetter.Length)];
+			string secondPart = lowerCaseFirstLetter[Random.Range(0, lowerCaseFirstLetter.Length)];
+			if (Random.value <= 0.1f)
+				return firstPart + secondPart + Random.Range(80, 100);
+			return firstPart + secondPart;
 		}
 	}
 
