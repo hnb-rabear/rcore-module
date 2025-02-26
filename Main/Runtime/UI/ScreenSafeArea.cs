@@ -7,6 +7,8 @@ namespace RCore.UI
 {
 	public class ScreenSafeArea : MonoBehaviour
 	{
+		public static Action OnOffsetChanged;
+		
 		public float topOffset;
 		public float bottomOffset;
 		public Canvas canvas;
@@ -78,6 +80,7 @@ namespace RCore.UI
 			}
 		}
 
+		public static float TopOffset;
 		public static void SetTopOffsetForBannerAd(float pBannerHeight, bool pPlaceInSafeArea = true)
 		{
 			float offset = 0;
@@ -94,14 +97,17 @@ namespace RCore.UI
 				offset = pBannerHeight;
 			}
 			
+			TopOffset = offset;
 			var ScreenSafeAreas = FindObjectsOfType<ScreenSafeArea>();
 			foreach (var component in ScreenSafeAreas)
 			{
 				component.topOffset = offset;
 				component.StartCoroutine(component.IEValidate());
 			}
+			OnOffsetChanged?.Invoke();
 		}
 
+		public static float BottomOffset;
 		public static void SetBottomOffsetForBannerAd(float pBannerHeight, bool pPlaceInSafeArea = true)
 		{
 			float offset = 0;
@@ -118,12 +124,14 @@ namespace RCore.UI
 				offset = pBannerHeight;
 			}
 			
+			BottomOffset = offset;
 			var screenSafeAreas = FindObjectsOfType<ScreenSafeArea>();
 			foreach (var component in screenSafeAreas)
 			{
 				component.bottomOffset = offset;
 				component.StartCoroutine(component.IEValidate());
 			}
+			OnOffsetChanged?.Invoke();
 		}
 
 		private IEnumerator IEValidate()
