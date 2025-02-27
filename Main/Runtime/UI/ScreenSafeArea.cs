@@ -54,7 +54,7 @@ namespace RCore.UI
 		private void CheckSafeArea()
 		{
 			var safeArea = Screen.safeArea;
-			safeArea.height -= topOffset + bottomOffset;
+			safeArea.height -= topOffset;
 			if (fixedTop)
 			{
 				safeArea.height += safeArea.y;
@@ -64,9 +64,16 @@ namespace RCore.UI
 				safeArea.height += safeArea.y;
 				safeArea.y = 0;
 			}
-			var anchorMin = safeArea.position + new Vector2(0, bottomOffset);
-			var anchorMax = safeArea.position + safeArea.size + new Vector2(0, bottomOffset);
+			var anchorMin = safeArea.position;
+			var anchorMax = safeArea.position + safeArea.size;
 
+			var sizeDelta = ((RectTransform)canvas.transform).sizeDelta;
+			sizeDelta.y = -bottomOffset;
+			((RectTransform)canvas.transform).sizeDelta = sizeDelta;
+			var position = ((RectTransform)canvas.transform).anchoredPosition;
+			position.y = bottomOffset / 2;
+			((RectTransform)canvas.transform).anchoredPosition = position;
+			
 			var pixelRect = canvas.pixelRect;
 			anchorMin.x /= pixelRect.width;
 			anchorMin.y /= pixelRect.height;

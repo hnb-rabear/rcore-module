@@ -32,13 +32,11 @@ namespace RCore.UI
 		[Button]
 		private void Validate()
 		{
-			var safeArea = Screen.safeArea;
-			safeArea.height -= ScreenSafeArea.TopOffset + ScreenSafeArea.BottomOffset;
-			var offsetHeight = Screen.currentResolution.height - safeArea.height;
+			var offsetHeight = Screen.currentResolution.height - Screen.safeArea.height;
 			if (offsetHeight > 0)
 			{
 				var rectTransform = (transform as RectTransform);
-				rectTransform.anchoredPosition = new Vector2(m_original.x, m_original.y);
+				rectTransform.anchoredPosition = new Vector2(m_original.x, m_original.y + offsetHeight / 2f);
 				rectTransform.sizeDelta = new Vector2(m_sizeDelta.x, m_sizeDelta.y + offsetHeight);
 			}
 		}
