@@ -1,8 +1,6 @@
 ﻿/***
  * Author RadBear - nbhung71711 @gmail.com - 2019
  **/
-
-using Sirenix.OdinInspector;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -618,7 +616,7 @@ namespace RCore.UI
 				});
 
 #else
-			StartCoroutine(IEArrangeChildren(childrenGroup, initialPositions, finalPositions, tweenTime, onFinish));
+			StartCoroutine(IEArrangeChildren(m_childrenGroup, initialPositions, finalPositions, tweenTime, onFinish));
 #endif
 		}
 
