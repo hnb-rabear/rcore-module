@@ -539,6 +539,8 @@ namespace RCore
 		}
 		public static string GenerateUserName(string countryCode)
 		{
+			if (Random.value < 0.11f)
+				return GenerateLatinUserName();
 			string characterSet = GetCharacterSet(countryCode);
 			switch (characterSet)
 			{
