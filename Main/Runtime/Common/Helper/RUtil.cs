@@ -726,12 +726,17 @@ namespace RCore
 				"Huyen", "Khiem", "Lan", "Lien", "Loan", "Mai", "Nga", "Ngoc", "Nhi", "Nu",
 				"Oanh", "Phuong", "Quyen", "Quynh", "Tam", "Tham", "Thuy", "Trang", "Trinh", "Tuyet"
 			};
-			float val = Random.value;
-			if (val < 0.3f)
-				return firstPart[Random.Range(0, firstPart.Length)];
-			if (val < 0.6f)
-				return secondPart[Random.Range(0, firstPart.Length)];
-			return $"{firstPart[Random.Range(0, firstPart.Length)]} {secondPart[Random.Range(0, secondPart.Length)]}";
+			string first = firstPart[Random.Range(0, firstPart.Length)];
+			string second = secondPart[Random.Range(0, secondPart.Length)];
+			if (first.Length <= 3 || second.Length <= 3)
+				return $"{first} {second}";
+			var rad = Random.value;
+			return rad switch
+			{
+				< 0.4f => Random.value > 0.5f ? first : first.ToLower(),
+				< 0.8f => Random.value > 0.5f ? second : second.ToLower(),
+				_ => Random.value > 0.5f ? $"{first} {second}" : $"{first.ToLower()} {second.ToLower()}"
+			};
 		}
 		private static string GenerateThailandUserName()
 		{
@@ -790,12 +795,17 @@ namespace RCore
 				"Tom", "Ugo", "Val", "Wil", "Xan", "Yan", "Zac", "Iker", "Omar", "Pere",
 				"Quim", "Arlo", "Orla", "Nilo", "Vina", "Juno", "Cira", "Leta", "Vina", "Maia"
 			};
-			float val = Random.value;
-			if (val < 0.3f)
-				return firstPart[Random.Range(0, firstPart.Length)];
-			if (val < 0.6f)
-				return secondPart[Random.Range(0, firstPart.Length)];
-			return $"{firstPart[Random.Range(0, firstPart.Length)]} {secondPart[Random.Range(0, secondPart.Length)]}";
+			string first = firstPart[Random.Range(0, firstPart.Length)];
+			string second = secondPart[Random.Range(0, secondPart.Length)];
+			if (first.Length <= 3 || second.Length <= 3)
+				return $"{first} {second}";
+			var rad = Random.value;
+			return rad switch
+			{
+				< 0.4f => Random.value > 0.5f ? first : first.ToLower(),
+				< 0.8f => Random.value > 0.5f ? second : second.ToLower(),
+				_ => Random.value > 0.5f ? $"{first} {second}" : $"{first.ToLower()} {second.ToLower()}"
+			};
 		}
 		private static string GenerateEnglishUserName()
 		{
@@ -815,12 +825,17 @@ namespace RCore
 				"Gulp", "Funk", "Bash", "Munch", "Jolt", "Twist", "Boop", "Snip", "Womp", "Zonk",
 				"Riff", "Thud", "Boing", "Splish", "Blip", "Slap", "Tonk", "Twitch", "Splat", "Clap"
 			};
-			float val = Random.value;
-			if (val < 0.3f)
-				return firstPart[Random.Range(0, firstPart.Length)];
-			if (val < 0.6f)
-				return secondPart[Random.Range(0, firstPart.Length)];
-			return $"{firstPart[Random.Range(0, firstPart.Length)]} {secondPart[Random.Range(0, secondPart.Length)]}";
+			string first = firstPart[Random.Range(0, firstPart.Length)];
+			string second = secondPart[Random.Range(0, secondPart.Length)];
+			if (first.Length <= 3 || second.Length <= 3)
+				return $"{first} {second}";
+			var rad = Random.value;
+			return rad switch
+			{
+				< 0.4f => Random.value > 0.5f ? first : first.ToLower(),
+				< 0.8f => Random.value > 0.5f ? second : second.ToLower(),
+				_ => Random.value > 0.5f ? $"{first} {second}" : $"{first.ToLower()} {second.ToLower()}"
+			};
 		}
 	}
 
