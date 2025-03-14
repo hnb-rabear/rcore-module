@@ -432,7 +432,8 @@ namespace RCore.UI
 								transition1.target.sprite = isOn ? transition1.on : transition1.off;
 						})
 						.SetId(GetInstanceID() + 1)
-						.SetEase(Ease.OutCubic);
+						.SetEase(Ease.OutCubic)
+						.SetUpdate(true);
 				}
 				if (m_customToggleGroup != null)
 					m_customToggleGroup.SetTarget(transform as RectTransform, tweenTime);
