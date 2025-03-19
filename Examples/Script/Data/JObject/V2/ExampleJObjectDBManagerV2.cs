@@ -1,5 +1,7 @@
+using Cysharp.Threading.Tasks;
 using RCore.Data.JObject;
 using RCore.Inspector;
+using System;
 using UnityEngine;
 
 namespace RCore.Example.Data.JObject
@@ -9,6 +11,11 @@ namespace RCore.Example.Data.JObject
 		private void Start()
 		{
 			Init();
+		}
+
+		public override UniTask<bool> DownloadThenImportProfileAsync(Action<bool> pOnCompleted = null)
+		{
+			throw new NotImplementedException();
 		}
 	}
 }

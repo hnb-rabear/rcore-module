@@ -1,7 +1,7 @@
+using Cysharp.Threading.Tasks;
 using System;
 using RCore.Inspector;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace RCore.Data.JObject
 {
@@ -23,7 +23,7 @@ namespace RCore.Data.JObject
 
 		public bool Initialzied => m_initialized;
 
-		public T DataCollection => m_dataCollection;
+		protected T DataCollection => m_dataCollection;
 
 		//============================================================================
 		// MonoBehaviour
@@ -86,6 +86,8 @@ namespace RCore.Data.JObject
 			PostLoad();
 			m_initialized = true;
 			onInitialized?.Invoke();
+			
+			EventDispatcher.AddListener<SaveGameEvent>(_ => Save());
 		}
 
 		public virtual bool Save(bool now = false, float saveDelayCustom = 0)
@@ -156,5 +158,9 @@ namespace RCore.Data.JObject
 			var utcNowTimestamp = TimeHelper.GetNowTimestamp(true);
 			m_dataCollection.OnPostLoad(utcNowTimestamp, offlineSeconds);
 		}
+
+		public abstract UniTask<bool> DownloadThenImportProfileAsync(Action<bool> pOnCompleted = null);
 	}
+	
+	public struct SaveGameEvent : BaseEvent { }
 }

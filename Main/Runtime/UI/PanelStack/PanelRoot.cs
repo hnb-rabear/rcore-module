@@ -124,6 +124,11 @@ namespace RCore.UI
 			return StackCount > 0;
 		}
 
+		public virtual void BlockQueue(bool pBlockQueue)
+		{
+			m_blockQueue = pBlockQueue;
+		}
+		
 		private Button CreatDimmerOverlay()
 		{
 			var fullScreenImageObj = new GameObject("BtnBackBackground", typeof(Image));
