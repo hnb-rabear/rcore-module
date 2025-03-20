@@ -1,6 +1,7 @@
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using UnityEditor;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -21,7 +22,7 @@ namespace RCore.Editor
 		private string m_newCategoryName = "";
 		private int m_editingCategory = -1;
 
-		private const string CATEGORIES_KEY = "AssetShortcutsWindow";
+		private const string FILE_PATH = "Assets/Editor/AssetShortcuts.json";
 
 		public static void ShowWindow()
 		{
@@ -40,13 +41,18 @@ namespace RCore.Editor
 
 		private void LoadData()
 		{
-			m_categories = JsonConvert.DeserializeObject<List<Category>>(EditorPrefs.GetString(CATEGORIES_KEY));
-			m_categories ??= new();
+			if (File.Exists(FILE_PATH))
+			{
+				string jsonData = File.ReadAllText(FILE_PATH);
+				m_categories = JsonConvert.DeserializeObject<List<Category>>(jsonData);
+			}
+			m_categories ??= new List<Category>();
 		}
 
 		private void SaveData()
 		{
-			EditorPrefs.SetString(CATEGORIES_KEY, JsonConvert.SerializeObject(m_categories));
+			string jsonData = JsonConvert.SerializeObject(m_categories, Formatting.Indented);
+			File.WriteAllText(FILE_PATH, jsonData);
 		}
 
 		private void OnGUI()
