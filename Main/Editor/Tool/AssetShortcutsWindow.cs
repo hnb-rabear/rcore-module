@@ -97,7 +97,7 @@ namespace RCore.Editor
 					if (EditorHelper.Button("Stop Edit", 60))
 						m_editingCategory = -1;
 				}
-				if (EditorHelper.ButtonColor("Delete", Color.red, 80))
+				if (EditorHelper.ButtonColor("Delete", Color.red, 70))
 				{
 					m_categories.Remove(category);
 					SaveData();
@@ -142,7 +142,11 @@ namespace RCore.Editor
 					{
 						GUILayout.BeginHorizontal();
 						EditorGUILayout.ObjectField(assetObj, typeof(Object), false);
-						if (EditorHelper.ButtonColor("Delete", Color.red, 80))
+						if (assetObj is SceneAsset && EditorHelper.Button("Open", 50))
+							UnityEditor.SceneManagement.EditorSceneManager.OpenScene(path);
+						if (PrefabUtility.GetPrefabAssetType(assetObj) == PrefabAssetType.Regular && EditorHelper.Button("Open", 50))
+							AssetDatabase.OpenAsset(assetObj);
+						if (EditorHelper.ButtonColor("Delete", Color.red, 70))
 						{
 							category.guids.Remove(guid);
 							ii--;
