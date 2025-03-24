@@ -158,8 +158,6 @@ namespace RCore.Data.JObject
 			var utcNowTimestamp = TimeHelper.GetNowTimestamp(true);
 			m_dataCollection.OnPostLoad(utcNowTimestamp, offlineSeconds);
 		}
-
-		public abstract UniTask<bool> DownloadThenImportProfileAsync(Action<bool> pOnCompleted = null);
 	}
 	
 	public struct SaveGameEvent : BaseEvent { }

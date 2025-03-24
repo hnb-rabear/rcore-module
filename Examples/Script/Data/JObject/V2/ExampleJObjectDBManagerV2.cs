@@ -12,10 +12,5 @@ namespace RCore.Example.Data.JObject
 		{
 			Init();
 		}
-
-		public override UniTask<bool> DownloadThenImportProfileAsync(Action<bool> pOnCompleted = null)
-		{
-			throw new NotImplementedException();
-		}
 	}
 }

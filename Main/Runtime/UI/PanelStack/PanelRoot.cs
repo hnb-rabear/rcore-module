@@ -123,11 +123,6 @@ namespace RCore.UI
 				return true;
 			return StackCount > 0;
 		}
-
-		public virtual void BlockQueue(bool pBlockQueue)
-		{
-			m_blockQueue = pBlockQueue;
-		}
 		
 		private Button CreatDimmerOverlay()
 		{
