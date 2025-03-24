@@ -77,10 +77,10 @@ namespace RCore.Data.JObject
 		// Public / Internal
 		//============================================================================
 
-		public virtual void Init()
+		public virtual bool Init()
 		{
 			if (m_initialized)
-				return;
+				return false;
 
 			m_dataCollection.Load();
 			PostLoad();
@@ -88,6 +88,7 @@ namespace RCore.Data.JObject
 			onInitialized?.Invoke();
 			
 			EventDispatcher.AddListener<SaveGameEvent>(_ => Save());
+			return true;
 		}
 
 		public virtual bool Save(bool now = false, float saveDelayCustom = 0)
