@@ -24,6 +24,10 @@ namespace RCore.Service
 		private static Dictionary<string, object> m_BackUpValues = new();
 		private static bool m_Changed;
 
+		public static void Init(IRemoteConfig remoteConfig)
+		{
+			Init(remoteConfig.GetDefaultValues(), _ => remoteConfig.LoadRemoteValues());
+		}
 		public static void Init(Dictionary<string, object> pDefaultData, Action<bool> pOnFetched)
 		{
 #if FIREBASE_REMOTE_CONFIG
