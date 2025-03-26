@@ -57,6 +57,7 @@ namespace RCore.Service
 		[ShowIf("@(adPlatform == AdPlatform.Admob)")]
 		public AdMobConfig iosAdMobCfg;
 		public GameObject adEventListener;
+		public Action onRewardedShowed;
 
 		public ApplovinProvider AppLovin => ApplovinProvider.Instance;
 		public AdMobProvider AdMob => AdMobProvider.Instance;
@@ -89,23 +90,31 @@ namespace RCore.Service
 					ApplovinProvider.Instance.adUnitInterstitial = appLovinConfig.adUnitInterstitial;
 					ApplovinProvider.Instance.adUnitRewarded = appLovinConfig.adUnitRewarded;
 					ApplovinProvider.Instance.adUnitBanner = appLovinConfig.adUnitBanner;
-					ApplovinProvider.Instance.Init(adEvent);
 					m_provider = ApplovinProvider.Instance;
+					m_provider.Init(adEvent);
 					break;
 				case AdPlatform.Admob:
 					AdMobProvider.Instance.adUnitInterstitial = adMobConfig.adUnitInterstitial;
 					AdMobProvider.Instance.adUnitRewarded = adMobConfig.adUnitRewarded;
 					AdMobProvider.Instance.adUnitBanner = adMobConfig.adUnitBanner;
-					AdMobProvider.Instance.Init(adEvent);
 					m_provider = AdMobProvider.Instance;
+					m_provider.Init(adEvent);
 					break;
 			}
 		}
 		public void ShowInterstitial(string placement, Action pCallback = null) => m_provider.ShowInterstitial(placement, pCallback);
 		public bool IsInterstitialReady() => m_provider.IsInterstitialReady();
-		public void ShowRewardedAd(string placement, Action<bool> pCallback = null) => m_provider.ShowRewardedAd(placement, pCallback);
+		public void ShowRewardedAd(string placement, Action<bool> pCallback = null)
+		{
+			m_provider.ShowRewardedAd(placement, ok =>
+			{
+				pCallback?.Invoke(ok);
+				if (ok)
+					onRewardedShowed?.Invoke();
+			});
+		}
 		public bool IsRewardedVideoAvailable() => m_provider.IsRewardedVideoAvailable();
-		public void DisplayBanner() => m_provider.DisplayBanner();
+		public bool DisplayBanner() => m_provider.DisplayBanner();
 		public void HideBanner() => m_provider.HideBanner();
 		public void DestroyBanner() => m_provider.DestroyBanner();
 		public bool IsBannerReady() => m_provider.IsBannerReady();

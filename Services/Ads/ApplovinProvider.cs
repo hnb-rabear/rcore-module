@@ -1,4 +1,4 @@
-﻿#if MAX
+﻿#if ADMOB
 using GoogleMobileAds.Ump.Api;
 #endif
 using System;
@@ -8,7 +8,7 @@ namespace RCore.Service
 {
 	public class ApplovinProvider : IAdProvider
 	{
-		public static ApplovinProvider m_Instance;
+		private static ApplovinProvider m_Instance;
 		public static ApplovinProvider Instance => m_Instance ??= new ApplovinProvider();
 		public string adUnitInterstitial;
 		public string adUnitRewarded;
@@ -19,7 +19,7 @@ namespace RCore.Service
 		public void Init(IAdEvent adEvent)
 		{
 			m_adEvent = adEvent;
-#if UNITY_ANDROID
+#if UNITY_ANDROID && ADMOB
 			// Create a ConsentRequestParameters object     
 			var request = new ConsentRequestParameters();
 			// Check the current consent information status
@@ -47,7 +47,7 @@ namespace RCore.Service
 				});
 			});
 #else
-			InitAds()
+			InitAds();
 #endif
 			void InitAds()
 			{
@@ -55,8 +55,8 @@ namespace RCore.Service
 				{
 					Debug.Log("AppLovin SDK is initialized");
 
-					InitInterstitialAds();
-					InitRewardedAds();
+					InitInterstitialAd();
+					InitRewardedAd();
 					InitBannerAds();
 				};
 
@@ -64,7 +64,7 @@ namespace RCore.Service
 			}
 		}
 
-#region Interstitial Ads
+#region Interstitial Ad
 
 		private int m_interstitialRetryAttempt;
 		private bool m_interstitialInitialized;
@@ -72,7 +72,7 @@ namespace RCore.Service
 		public MaxSdkBase.AdInfo lastInterstitialInfo;
 		public MaxSdkBase.ErrorInfo lastInterstitialErrInfo;
 
-		private void InitInterstitialAds()
+		private void InitInterstitialAd()
 		{
 			if (string.IsNullOrEmpty(adUnitInterstitial)) return;
 			// Attach callback
@@ -82,6 +82,7 @@ namespace RCore.Service
 			MaxSdkCallbacks.Interstitial.OnAdHiddenEvent += OnInterstitialHiddenEvent;
 			MaxSdkCallbacks.Interstitial.OnAdDisplayFailedEvent += OnInterstitialAdFailedToDisplayEvent;
 			MaxSdkCallbacks.Interstitial.OnAdClickedEvent += OnInterstitialAdClickedEvent;
+			MaxSdkCallbacks.Interstitial.OnAdRevenuePaidEvent += OnInterstitialAdRevenuePaidEvent;
 
 			// Load the first interstitial
 			LoadInterstitial();
@@ -123,7 +124,9 @@ namespace RCore.Service
 			Debug.Log("Interstitial ad failed to display.");
 			//AppLovin recommends that you load the next ad.
 			lastInterstitialInfo = adInfo;
+			lastInterstitialErrInfo = errorInfo;
 			LoadInterstitial();
+			m_adEvent.OnInterstitialShow(false, placement);
 		}
 		private void OnInterstitialHiddenEvent(string adUnitId, MaxSdkBase.AdInfo adInfo)
 		{
@@ -137,6 +140,8 @@ namespace RCore.Service
 		}
 		public void ShowInterstitial(string pPlacement = null, Action pCallback = null)
 		{
+			lastInterstitialInfo = null;
+			lastInterstitialErrInfo = null;
 			placement = pPlacement;
 #if UNITY_EDITOR
 			pCallback?.Invoke();
@@ -158,6 +163,11 @@ namespace RCore.Service
 #endif
 			return m_interstitialInitialized && MaxSdk.IsInterstitialReady(adUnitInterstitial);
 		}
+		private void OnInterstitialAdRevenuePaidEvent(string adUnitId, MaxSdkBase.AdInfo adInfo)
+		{
+			lastInterstitialInfo = adInfo;
+			m_adEvent?.OnInterstitialPaid(placement);
+		}
 
 #endregion
 
@@ -170,7 +180,7 @@ namespace RCore.Service
 		public MaxSdkBase.AdInfo lastRewardedInfo;
 		public MaxSdkBase.ErrorInfo lastRewardedErrInfo;
 
-		private void InitRewardedAds()
+		private void InitRewardedAd()
 		{
 			if (string.IsNullOrEmpty(adUnitRewarded)) return;
 			// Attach callback
@@ -180,6 +190,7 @@ namespace RCore.Service
 			MaxSdkCallbacks.Rewarded.OnAdDisplayFailedEvent += OnRewardedAdFailedToDisplayEvent;
 			MaxSdkCallbacks.Rewarded.OnAdReceivedRewardEvent += OnRewardedAdReceivedRewardEvent;
 			MaxSdkCallbacks.Rewarded.OnAdClickedEvent += OnRewardedAdClickedEvent;
+			MaxSdkCallbacks.Rewarded.OnAdRevenuePaidEvent += OnRewardedAdRevenuePaidEvent;
 
 			// Load the first rewarded ad
 			LoadRewardedAd();
@@ -207,7 +218,7 @@ namespace RCore.Service
 			m_rewardedRetryAttempt++;
 			var retryDelay = Mathf.Pow(2, Mathf.Min(6, m_rewardedRetryAttempt));
 
-			TimerEventsGlobal.Instance.WaitForSeconds(retryDelay, (s) => LoadRewardedAd());
+			TimerEventsGlobal.Instance.WaitForSeconds(retryDelay, _ => LoadRewardedAd());
 
 			m_adEvent?.OnRewardedLoadFailed();
 		}
@@ -215,8 +226,10 @@ namespace RCore.Service
 		{
 			Debug.Log("Rewarded ad failed to display.");
 			//AppLovin recommends that you load the next ad.
+			lastRewardedErrInfo = errorInfo;
 			lastRewardedInfo = adInfo;
 			LoadRewardedAd();
+			m_adEvent.OnRewardedShow(false, placement);
 		}
 		private void OnRewardedAdHiddenEvent(string adUnitId, MaxSdkBase.AdInfo adInfo)
 		{
@@ -239,6 +252,8 @@ namespace RCore.Service
 		}
 		public void ShowRewardedAd(string pPlacement = null, Action<bool> pCallback = null)
 		{
+			lastRewardedInfo = null;
+			lastRewardedErrInfo = null;
 			placement = pPlacement;
 #if UNITY_EDITOR
 			pCallback?.Invoke(true);
@@ -262,6 +277,11 @@ namespace RCore.Service
 			return true;
 #endif
 			return m_rewardedInitialized && MaxSdk.IsRewardedAdReady(adUnitRewarded);
+		}
+		private void OnRewardedAdRevenuePaidEvent(string adUnitId, MaxSdkBase.AdInfo adInfo)
+		{
+			lastRewardedInfo = adInfo;
+			m_adEvent?.OnRewardedPaid(placement);
 		}
 
 #endregion
@@ -287,7 +307,8 @@ namespace RCore.Service
 			MaxSdkCallbacks.Banner.OnAdLoadedEvent += OnBannerAdLoadedEvent;
 			MaxSdkCallbacks.Banner.OnAdLoadFailedEvent += OnBannerAdLoadFailedEvent;
 			MaxSdkCallbacks.Banner.OnAdClickedEvent += OnBannerAdClickedEvent;
-				
+			MaxSdkCallbacks.Banner.OnAdRevenuePaidEvent += OnBannerAdPaidEvent;
+			
 			m_bannerInitialized = true;
 			m_adEvent.OnBannerInit();
 		}
@@ -308,10 +329,16 @@ namespace RCore.Service
 			lastBannerInfo = adInfo;
 			m_adEvent.OnBannerClicked();
 		}
-		public void DisplayBanner()
+		private void OnBannerAdPaidEvent(string adUnitId, MaxSdkBase.AdInfo adInfo)
 		{
-			if (!m_bannerInitialized) return;
+			lastBannerInfo = adInfo;
+			m_adEvent?.OnBannerPaid();
+		}
+		public bool DisplayBanner()
+		{
+			if (!IsBannerReady()) return false;
 			MaxSdk.ShowBanner(adUnitBanner);
+			return true;
 		}
 		public void HideBanner()
 		{
@@ -322,6 +349,8 @@ namespace RCore.Service
 		{
 			if (!m_bannerInitialized) return;
 			MaxSdk.DestroyBanner(adUnitBanner);
+			lastBannerInfo = null;
+			lastBannerErrInfo = null;
 		}
 		public bool IsBannerReady()
 		{
@@ -353,7 +382,7 @@ namespace RCore.Service
 		}
 
 #else
-        public void Init() { }
+		public void Init(IAdEvent adEvent) { }
         public void ShowInterstitial(string pPlacement = null, Action pCallback = null) => pCallback?.Invoke();
         public bool IsInterstitialReady() => Application.platform == RuntimePlatform.WindowsEditor;
 		public void ShowRewardedAd(string pPlacement = null, Action<bool> pCallback = null) => pCallback?.Invoke(Application.platform == RuntimePlatform.WindowsEditor);
