@@ -292,6 +292,7 @@ namespace RCore.Service
 		private bool m_bannerLoaded;
 		public MaxSdkBase.AdInfo lastBannerInfo;
 		public MaxSdkBase.ErrorInfo lastBannerErrInfo;
+		private bool m_firstLoad = true;
 
 		private void InitBannerAds()
 		{
@@ -314,6 +315,9 @@ namespace RCore.Service
 		}
 		private void OnBannerAdLoadedEvent(string adUnitId, MaxSdkBase.AdInfo adInfo)
 		{
+			if (m_firstLoad)
+				HideBanner();
+			m_firstLoad = false;
 			lastBannerInfo = adInfo;
 			m_bannerLoaded = true;
 			m_adEvent?.OnBannerLoaded();
