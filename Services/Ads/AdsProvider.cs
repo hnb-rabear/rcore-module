@@ -5,19 +5,19 @@ using UnityEngine.Serialization;
 
 namespace RCore.Service
 {
-	public class AdsManager : MonoBehaviour
+	public class AdsProvider : MonoBehaviour
 	{
-		private static AdsManager m_Instance;
-		public static AdsManager Instance
+		private static AdsProvider m_Instance;
+		public static AdsProvider Instance
 		{
 			get
 			{
 				if (m_Instance == null)
-					m_Instance = FindObjectOfType<AdsManager>();
+					m_Instance = FindObjectOfType<AdsProvider>();
 				if (m_Instance == null)
 				{
 					var gameObject = new GameObject("IAPManager");
-					m_Instance = gameObject.AddComponent<AdsManager>();
+					m_Instance = gameObject.AddComponent<AdsProvider>();
 					gameObject.hideFlags = HideFlags.DontSave;
 				}
 				return m_Instance;
