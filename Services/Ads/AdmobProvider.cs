@@ -262,7 +262,7 @@ namespace RCore.Service
 
 		private BannerView m_bannerView;
 		private bool m_bannerLoaded;
-		private bool m_bannerInitialized;
+		private bool m_bannerDisplayed;
 		public AdValue bannerValue;
 
 		private void InitBannerAds()
@@ -278,7 +278,6 @@ namespace RCore.Service
 
 			var request = new AdRequest();
 			m_bannerView.LoadAd(request);
-			m_bannerInitialized = true;
 			m_adEvent.OnBannerInit();
 		}
 		private void Banner_OnBannerAdLoaded()
@@ -302,30 +301,42 @@ namespace RCore.Service
 		}
 		public bool DisplayBanner()
 		{
-			if (m_bannerInitialized && m_bannerView != null)
+			if (m_bannerLoaded && m_bannerView != null)
 			{
 				m_bannerView.Show();
+				m_bannerDisplayed = true;
+				m_adEvent.OnBannerShowed(true);
 				return true;
 			}
 			return false;
 		}
 		public void HideBanner()
 		{
-			if (m_bannerInitialized && m_bannerView != null)
+			if (m_bannerLoaded && m_bannerView != null)
+			{
 				m_bannerView.Hide();
+				m_bannerDisplayed = false;
+				m_adEvent.OnBannerShowed(false);
+			}
 		}
 		public void DestroyBanner()
 		{
-			if (m_bannerInitialized && m_bannerView != null)
+			if (m_bannerLoaded && m_bannerView != null)
 			{
 				m_bannerView.Destroy();
 				m_bannerView = null;
 				bannerValue = null;
+				m_bannerDisplayed = false;
+				m_adEvent.OnBannerShowed(false);
 			}
 		}
 		public bool IsBannerReady()
 		{
-			return m_bannerInitialized && m_bannerLoaded;
+			return m_bannerLoaded;
+		}
+		public bool IsBannerDisplayed()
+		{
+			return m_bannerDisplayed;
 		}
 
 #endregion

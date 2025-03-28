@@ -11,9 +11,10 @@ namespace RCore.Service
 		void ShowRewardedAd(string pPlacement = null, Action<bool> pCallback = null);
 		bool IsRewardedVideoAvailable();
 		bool DisplayBanner() => false;
-		void HideBanner() { }
-		void DestroyBanner() { }
+		void HideBanner();
+		void DestroyBanner();
 		bool IsBannerReady();
+		bool IsBannerDisplayed();
 	}
 
 	public interface IAdEvent
@@ -39,5 +40,6 @@ namespace RCore.Service
 		void OnBannerLoadFailed();
 		void OnBannerClicked();
 		void OnBannerPaid();
+		void OnBannerShowed(bool pSuccess);
 	}
 }

@@ -61,6 +61,7 @@ namespace RCore.Service
 
 		public ApplovinProvider AppLovin => ApplovinProvider.Instance;
 		public AdMobProvider AdMob => AdMobProvider.Instance;
+		public bool IsBannerDisplayed => m_provider.IsBannerDisplayed();
 
 		private IAdProvider m_provider;
 

@@ -288,11 +288,11 @@ namespace RCore.Service
 
 #region Banner
 
-		private bool m_bannerInitialized;
 		private bool m_bannerLoaded;
 		public MaxSdkBase.AdInfo lastBannerInfo;
 		public MaxSdkBase.ErrorInfo lastBannerErrInfo;
 		private bool m_firstLoad = true;
+		private bool m_bannerDisplayed;
 
 		private void InitBannerAds()
 		{
@@ -309,14 +309,13 @@ namespace RCore.Service
 			MaxSdkCallbacks.Banner.OnAdLoadFailedEvent += OnBannerAdLoadFailedEvent;
 			MaxSdkCallbacks.Banner.OnAdClickedEvent += OnBannerAdClickedEvent;
 			MaxSdkCallbacks.Banner.OnAdRevenuePaidEvent += OnBannerAdPaidEvent;
-			
-			m_bannerInitialized = true;
+
 			m_adEvent.OnBannerInit();
 		}
 		private void OnBannerAdLoadedEvent(string adUnitId, MaxSdkBase.AdInfo adInfo)
 		{
 			if (m_firstLoad)
-				HideBanner();
+				MaxSdk.HideBanner(adUnitBanner);
 			m_firstLoad = false;
 			lastBannerInfo = adInfo;
 			m_bannerLoaded = true;
@@ -340,25 +339,36 @@ namespace RCore.Service
 		}
 		public bool DisplayBanner()
 		{
-			if (!IsBannerReady()) return false;
+			if (!m_bannerLoaded) return false;
 			MaxSdk.ShowBanner(adUnitBanner);
+			m_adEvent.OnBannerShowed(true);
+			m_bannerDisplayed = true;
 			return true;
 		}
 		public void HideBanner()
 		{
-			if (!m_bannerInitialized) return;
+			if (!m_bannerLoaded) return;
 			MaxSdk.HideBanner(adUnitBanner);
+			m_adEvent.OnBannerShowed(false);
+			m_bannerDisplayed = false;
 		}
 		public void DestroyBanner()
 		{
-			if (!m_bannerInitialized) return;
+			if (!m_bannerLoaded) return;
 			MaxSdk.DestroyBanner(adUnitBanner);
+			if (m_bannerDisplayed)
+				m_adEvent.OnBannerShowed(false);
 			lastBannerInfo = null;
 			lastBannerErrInfo = null;
+			m_bannerDisplayed = false;
 		}
 		public bool IsBannerReady()
 		{
-			return m_bannerInitialized && m_bannerLoaded;
+			return m_bannerLoaded;
+		}
+		public bool IsBannerDisplayed()
+		{
+			return m_bannerDisplayed;
 		}
 
 #endregion
