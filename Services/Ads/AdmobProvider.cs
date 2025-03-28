@@ -373,6 +373,7 @@ namespace RCore.Service
 		public void HideBanner() { }
 		public void DestroyBanner() { }
 		public bool IsBannerReady() => false;
+		public bool IsBannerDisplayed() => false;
 #endif
 	}
 }
