@@ -126,6 +126,6 @@ namespace RCore.Service
 		}
 		public void DestroyBanner() => m_provider.DestroyBanner();
 		public bool IsBannerReady() => m_provider.IsBannerReady();
-		public bool IsBannerDisplayed() => m_provider.IsBannerDisplayed();
+		public bool IsBannerDisplayed() => m_provider != null && m_provider.IsBannerDisplayed();
 	}
 }
