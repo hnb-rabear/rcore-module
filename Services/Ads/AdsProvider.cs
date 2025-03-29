@@ -58,10 +58,10 @@ namespace RCore.Service
 		public AdMobConfig iosAdMobCfg;
 		public GameObject adEventListener;
 		public Action onRewardedShowed;
+		public Action<bool> onBannerDisplayed;
 
 		public ApplovinProvider AppLovin => ApplovinProvider.Instance;
 		public AdMobProvider AdMob => AdMobProvider.Instance;
-		public bool IsBannerDisplayed => m_provider.IsBannerDisplayed();
 
 		private IAdProvider m_provider;
 
@@ -71,10 +71,6 @@ namespace RCore.Service
 				Init();
 		}
 		public void Init()
-		{
-			Init(adEventListener != null ? adEventListener.GetComponent<IAdEvent>() : null);
-		}
-		public void Init(IAdEvent adEvent)
 		{
 			AppLovinConfig appLovinConfig;
 			AdMobConfig adMobConfig;
@@ -91,15 +87,17 @@ namespace RCore.Service
 					ApplovinProvider.Instance.adUnitInterstitial = appLovinConfig.adUnitInterstitial;
 					ApplovinProvider.Instance.adUnitRewarded = appLovinConfig.adUnitRewarded;
 					ApplovinProvider.Instance.adUnitBanner = appLovinConfig.adUnitBanner;
+					ApplovinProvider.Instance.SetEventListener(adEventListener);
 					m_provider = ApplovinProvider.Instance;
-					m_provider.Init(adEvent);
+					m_provider.Init();
 					break;
 				case AdPlatform.Admob:
 					AdMobProvider.Instance.adUnitInterstitial = adMobConfig.adUnitInterstitial;
 					AdMobProvider.Instance.adUnitRewarded = adMobConfig.adUnitRewarded;
 					AdMobProvider.Instance.adUnitBanner = adMobConfig.adUnitBanner;
+					AdMobProvider.Instance.SetEventListener(adEventListener);
 					m_provider = AdMobProvider.Instance;
-					m_provider.Init(adEvent);
+					m_provider.Init();
 					break;
 			}
 		}
@@ -115,9 +113,19 @@ namespace RCore.Service
 			});
 		}
 		public bool IsRewardedVideoAvailable() => m_provider.IsRewardedVideoAvailable();
-		public bool DisplayBanner() => m_provider.DisplayBanner();
-		public void HideBanner() => m_provider.HideBanner();
+		public bool DisplayBanner()
+		{
+			bool displayed = m_provider.DisplayBanner();
+			if (displayed)
+				onBannerDisplayed?.Invoke(true);
+			return displayed;
+		}
+		public void HideBanner()
+		{
+			m_provider.HideBanner();
+		}
 		public void DestroyBanner() => m_provider.DestroyBanner();
 		public bool IsBannerReady() => m_provider.IsBannerReady();
+		public bool IsBannerDisplayed() => m_provider.IsBannerDisplayed();
 	}
 }
