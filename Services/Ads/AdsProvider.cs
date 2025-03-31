@@ -64,6 +64,7 @@ namespace RCore.Service
 		public AdMobProvider AdMob => AdMobProvider.Instance;
 
 		private IAdProvider m_provider;
+		private bool m_initialized;
 
 		private void Start()
 		{
@@ -72,6 +73,8 @@ namespace RCore.Service
 		}
 		public void Init()
 		{
+			if (m_initialized)
+				return;
 			AppLovinConfig appLovinConfig;
 			AdMobConfig adMobConfig;
 #if UNITY_IOS
@@ -100,6 +103,7 @@ namespace RCore.Service
 					m_provider.Init();
 					break;
 			}
+			m_initialized = true;
 		}
 		public void ShowInterstitial(string placement, Action pCallback = null) => m_provider.ShowInterstitial(placement, pCallback);
 		public bool IsInterstitialReady() => m_provider.IsInterstitialReady();
