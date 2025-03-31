@@ -83,8 +83,8 @@ namespace RCore.Service
 		{
 			if (m_initialized)
 				return;
-			AppLovinConfig appLovinConfig;
-			AdMobConfig adMobConfig;
+			AppLovinConfig appLovinConfig = default;
+			AdMobConfig adMobConfig = default;
 #if UNITY_IOS
 			appLovinConfig = m_iosAppLovinCfg;
 			adMobConfig = m_iosAdMobCfg;
