@@ -371,7 +371,8 @@ namespace RCore.Service
 		}
 
 #else
-		public void Init(IAdEvent adEvent) { }
+		public void Init() { }
+		public void SetEventListener(GameObject listener) { }
         public void ShowInterstitial(string pPlacement = null, Action pCallback = null) => pCallback?.Invoke();
         public bool IsInterstitialReady() => Application.platform == RuntimePlatform.WindowsEditor;
 		public void ShowRewardedAd(string pPlacement = null, Action<bool> pCallback = null) => pCallback?.Invoke(Application.platform == RuntimePlatform.WindowsEditor);

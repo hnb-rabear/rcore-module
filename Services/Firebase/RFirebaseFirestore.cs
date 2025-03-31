@@ -120,7 +120,6 @@ namespace RCore.Service
 		}
 		public static async UniTask<PlayerDataDoc> LoadPlayerDataDocAsync(string playerId)
 		{
-			if (!RFirebaseAuth.Authenticated) return null;
 			if (string.IsNullOrEmpty(playerId))
 				return null;
 			var task = m_PlayerDataCollection.Document(playerId).GetSnapshotAsync();
@@ -171,7 +170,6 @@ namespace RCore.Service
 		}
 		public static async UniTask<List<PlayerIdentityDoc>> FindPlayerIdentityDocs(string country = null, int timestampNowUtc = 0, int version = 0, int limit = 0)
 		{
-			if (!RFirebaseAuth.Authenticated) return null;
 			var docs = new List<PlayerIdentityDoc>();
 			if (string.IsNullOrEmpty(country))
 				return docs;

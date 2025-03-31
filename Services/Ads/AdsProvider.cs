@@ -1,4 +1,6 @@
+#if ODIN
 using Sirenix.OdinInspector;
+#endif
 using System;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -48,6 +50,7 @@ namespace RCore.Service
 
 		public bool autoInit;
 		public AdPlatform adPlatform;
+#if ODIN
 		[ShowIf("@(adPlatform == AdPlatform.Applovin)")]
 		public AppLovinConfig androidAppLovinCfg;
 		[ShowIf("@(adPlatform == AdPlatform.Applovin)")]
@@ -55,6 +58,11 @@ namespace RCore.Service
 		[ShowIf("@(adPlatform == AdPlatform.Admob)")]
 		public AdMobConfig androidAdMobCfg;
 		[ShowIf("@(adPlatform == AdPlatform.Admob)")]
+#else
+		public AppLovinConfig androidAppLovinCfg;
+		public AppLovinConfig iosAppLovinCfg;
+		public AdMobConfig androidAdMobCfg;
+#endif
 		public AdMobConfig iosAdMobCfg;
 		public GameObject adEventListener;
 		public Action onRewardedShowed;
