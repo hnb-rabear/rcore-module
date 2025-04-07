@@ -2,6 +2,7 @@
 using GoogleMobileAds.Ump.Api;
 #endif
 using System;
+using System.Threading.Tasks;
 using UnityEngine;
 
 namespace RCore.Service
@@ -56,8 +57,8 @@ namespace RCore.Service
 				{
 					Debug.Log("AppLovin SDK is initialized");
 
-					InitInterstitialAd();
 					InitRewardedAd();
+					InitInterstitialAd();
 					InitBannerAds();
 				};
 
@@ -74,7 +75,6 @@ namespace RCore.Service
 #region Interstitial Ad
 
 		private int m_interstitialRetryAttempt;
-		private bool m_interstitialInitialized;
 		private Action m_onInterstitialAdCompleted;
 		public MaxSdkBase.AdInfo lastInterstitialInfo;
 		public MaxSdkBase.ErrorInfo lastInterstitialErrInfo;
@@ -92,9 +92,8 @@ namespace RCore.Service
 			MaxSdkCallbacks.Interstitial.OnAdRevenuePaidEvent += OnInterstitialAdRevenuePaidEvent;
 
 			// Load the first interstitial
-			LoadInterstitial();
+			WaitForSeconds(1, LoadInterstitial);
 
-			m_interstitialInitialized = true;
 			m_interstitialAdEvent.OnInterstitialInit();
 		}
 		private void LoadInterstitial()
@@ -116,7 +115,7 @@ namespace RCore.Service
 
 			m_interstitialRetryAttempt++;
 			var retryDelay = Mathf.Pow(2, Mathf.Min(6, m_interstitialRetryAttempt));
-			TimerEventsGlobal.Instance.WaitForSeconds(retryDelay, (s) => LoadInterstitial());
+			WaitForSeconds(retryDelay, LoadInterstitial);
 			m_interstitialAdEvent?.OnInterstitialLoadFailed();
 		}
 		private void OnInterstitialDisplayedEvent(string adUnitId, MaxSdkBase.AdInfo adInfo)
@@ -158,22 +157,26 @@ namespace RCore.Service
 			{
 				m_onInterstitialAdCompleted = pCallback;
 				MaxSdk.ShowInterstitial(adUnitInterstitial);
-				m_interstitialAdEvent?.OnInterstitialShow(true, placement);
+				
 			}
-			else
-				m_interstitialAdEvent?.OnInterstitialShow(false, placement);
+			m_interstitialAdEvent?.OnInterstitialShow(IsInterstitialReady(), placement);
 		}
 		public bool IsInterstitialReady()
 		{
 #if UNITY_EDITOR
 			return true;
 #endif
-			return m_interstitialInitialized && MaxSdk.IsInterstitialReady(adUnitInterstitial);
+			return MaxSdk.IsInterstitialReady(adUnitInterstitial);
 		}
 		private void OnInterstitialAdRevenuePaidEvent(string adUnitId, MaxSdkBase.AdInfo adInfo)
 		{
 			lastInterstitialInfo = adInfo;
 			m_interstitialAdEvent?.OnInterstitialPaid(placement);
+		}
+		private static async void WaitForSeconds(float pSecond, Action pAction)
+		{
+			await Task.Delay(Mathf.RoundToInt(pSecond * 1000));
+			pAction?.Invoke();
 		}
 
 #endregion
@@ -225,7 +228,7 @@ namespace RCore.Service
 			m_rewardedRetryAttempt++;
 			var retryDelay = Mathf.Pow(2, Mathf.Min(6, m_rewardedRetryAttempt));
 
-			TimerEventsGlobal.Instance.WaitForSeconds(retryDelay, _ => LoadRewardedAd());
+			WaitForSeconds(retryDelay, LoadRewardedAd);
 
 			m_rewardedAdEvent?.OnRewardedLoadFailed();
 		}
