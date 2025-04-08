@@ -116,7 +116,7 @@ namespace RCore.Service
 			else
 				InitProvider();
 #else
-			Init();
+			InitProvider();
 #endif
 		}
 		private void InitProvider()
