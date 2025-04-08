@@ -1,6 +1,7 @@
 #if ODIN
 using Sirenix.OdinInspector;
 #endif
+using GoogleMobileAds.Ump.Api;
 using System;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -18,7 +19,7 @@ namespace RCore.Service
 					m_Instance = FindObjectOfType<AdsProvider>();
 				if (m_Instance == null)
 				{
-					var gameObject = new GameObject("IAPManager");
+					var gameObject = new GameObject("AdsProvider");
 					m_Instance = gameObject.AddComponent<AdsProvider>();
 					gameObject.hideFlags = HideFlags.DontSave;
 				}
@@ -49,6 +50,7 @@ namespace RCore.Service
 		}
 
 		public bool autoInit;
+		public bool requestConsent = true;
 		public AdPlatform adPlatform;
 #if ODIN
 		[ShowIf("@(adPlatform == AdPlatform.Applovin)")]
@@ -80,6 +82,44 @@ namespace RCore.Service
 				Init();
 		}
 		public void Init()
+		{
+#if UNITY_ANDROID && ADMOB
+			if (requestConsent)
+			{
+				// Create a ConsentRequestParameters object     
+				var request = new ConsentRequestParameters();
+				// Check the current consent information status
+				ConsentInformation.Update(request, error =>
+				{
+					if (error != null)
+					{
+						// Handle the error.            
+						Debug.LogError(error);
+						InitProvider();
+						return;
+					}
+
+					ConsentForm.LoadAndShowConsentFormIfRequired(formError =>
+					{
+						if (formError != null)
+						{
+							// Consent gathering failed.
+							InitProvider();
+							return;
+						}
+						// Consent has been gathered.            
+						if (ConsentInformation.CanRequestAds())
+							InitProvider();
+					});
+				});
+			}
+			else
+				InitProvider();
+#else
+			Init();
+#endif
+		}
+		private void InitProvider()
 		{
 			if (m_initialized)
 				return;

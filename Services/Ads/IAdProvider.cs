@@ -17,7 +17,7 @@ namespace RCore.Service
 		bool IsBannerDisplayed();
 	}
 
-	public interface IRewardedAdEvent
+	public interface IRewardedAdListener
 	{
 		void OnRewardedInit();
 		void OnRewardedLoaded();
@@ -28,7 +28,7 @@ namespace RCore.Service
 		void OnRewardedPaid(string pPlacement);
 	}
 	
-	public interface IInterstitialAdEvent
+	public interface IInterstitialAdListener
 	{
 		void OnInterstitialInit();
 		void OnInterstitialLoaded();
@@ -39,7 +39,7 @@ namespace RCore.Service
 		void OnInterstitialPaid(string pPlacement);
 	}
 
-	public interface IBannerAdEvent
+	public interface IBannerAdListener
 	{
 		void OnBannerInit();
 		void OnBannerLoaded();
