@@ -84,7 +84,7 @@ namespace RCore
 		/// <summary>
 		/// 00:00:00
 		/// </summary>
-		public static string FormatHhMmSs(double seconds, int pMaxSplits = 2)
+		public static string FormatHhMmSs(double seconds, int pMaxSplits = 3)
 		{
 			int totalSeconds = (int)seconds;
 			int totalHours = totalSeconds / 3600;
