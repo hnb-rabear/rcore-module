@@ -54,7 +54,7 @@ namespace RCore.Data.JObject
 			int utcNowTimestamp = TimeHelper.GetNowTimestamp(true);
 			int offlineSeconds = 0;
 			if (!pause)
-				offlineSeconds = GetOfflineSeconds();
+				offlineSeconds = m_dataCollection.session.GetOfflineSeconds();
 
 			m_dataCollection.OnPause(pause, utcNowTimestamp, offlineSeconds);
 
@@ -86,7 +86,7 @@ namespace RCore.Data.JObject
 			PostLoad();
 			m_initialized = true;
 			onInitialized?.Invoke();
-			
+
 			EventDispatcher.AddListener<SaveGameEvent>(_ => Save());
 			return true;
 		}
@@ -138,28 +138,17 @@ namespace RCore.Data.JObject
 			m_enableAutoSave = pValue;
 		}
 
-		public virtual int GetOfflineSeconds()
-		{
-			int offlineSeconds = 0;
-			if (m_dataCollection.session.data.lastActive > 0)
-			{
-				int utcNowTimestamp = TimeHelper.GetNowTimestamp(true);
-				offlineSeconds = utcNowTimestamp - m_dataCollection.session.data.lastActive;
-			}
-			return offlineSeconds;
-		}
-
 		//============================================================================
 		// Private / Protected
 		//============================================================================
 
-		protected virtual void PostLoad()
+		protected void PostLoad()
 		{
-			int offlineSeconds = GetOfflineSeconds();
+			int offlineSeconds = m_dataCollection.session.GetOfflineSeconds();
 			var utcNowTimestamp = TimeHelper.GetNowTimestamp(true);
 			m_dataCollection.OnPostLoad(utcNowTimestamp, offlineSeconds);
 		}
 	}
-	
+
 	public struct SaveGameEvent : BaseEvent { }
 }
