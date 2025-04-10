@@ -25,7 +25,7 @@ namespace RCore.Data.JObject
 			CreateModel(session, "SessionData");
 		}
 
-		public virtual void SaveNow()
+		public virtual void Save()
 		{
 			if (m_models == null)
 				return;
@@ -139,7 +139,7 @@ namespace RCore.Data.JObject
 					m_collection.Load();
 
 				if (GUILayout.Button("Save"))
-					m_collection.SaveNow();
+					m_collection.Save();
 			}
 			EditorGUILayout.EndHorizontal();
 

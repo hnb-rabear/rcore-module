@@ -17,6 +17,7 @@ namespace RCore.Data.JObject
 		protected float m_saveDelayCustom;
 		protected float m_lastSave;
 		protected bool m_enableAutoSave = true;
+		private int m_pauseState = -1;
 
 		public bool Initialzied => m_initialized;
 
@@ -42,7 +43,6 @@ namespace RCore.Data.JObject
 			}
 		}
 
-		private int m_pauseState = -1;
 		protected virtual void OnApplicationPause(bool pause)
 		{
 			if (!m_initialized || m_pauseState == (pause ? 0 : 1))
@@ -92,7 +92,7 @@ namespace RCore.Data.JObject
 				// Do not allow multiple Save calls within a short period of time.
 				if (Time.unscaledTime - m_lastSave < 0.2f)
 					return false;
-				m_dataCollection.SaveNow();
+				m_dataCollection.Save();
 				m_saveDelayCustom = 0; // Reset save delay custom
 				m_lastSave = Time.unscaledTime;
 				return true;
