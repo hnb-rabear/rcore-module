@@ -49,13 +49,13 @@ namespace RCore.Data.JObject
 			PostLoad();
 		}
 
-		public void OnUpdate(float deltaTime)
+		public virtual void OnUpdate(float deltaTime)
 		{
 			foreach (var controller in m_models)
 				controller.OnUpdate(deltaTime);
 		}
 
-		public void OnPause(bool pause)
+		public virtual void OnPause(bool pause)
 		{
 			int utcNowTimestamp = TimeHelper.GetNowTimestamp(true);
 			int offlineSeconds = 0;
@@ -65,7 +65,7 @@ namespace RCore.Data.JObject
 				handler.OnPause(pause, utcNowTimestamp, offlineSeconds);
 		}
 
-		public void PostLoad()
+		public virtual void PostLoad()
 		{
 			int offlineSeconds = session.GetOfflineSeconds();
 			var utcNowTimestamp = TimeHelper.GetNowTimestamp(true);
