@@ -1,4 +1,3 @@
-using Cysharp.Threading.Tasks;
 using System;
 using RCore.Inspector;
 using UnityEngine;
@@ -10,7 +9,6 @@ namespace RCore.Data.JObject
 		public Action onInitialized;
 		[SerializeField, CreateScriptableObject, AutoFill] protected T m_dataCollection;
 		[SerializeField, Range(1, 10)] protected int m_saveDelay = 3;
-		[SerializeField] protected bool m_enabledSave = true;
 		[SerializeField] protected bool m_saveOnPause = true;
 		[SerializeField] protected bool m_saveOnQuit = true;
 
@@ -18,12 +16,11 @@ namespace RCore.Data.JObject
 		protected float m_saveCountdown;
 		protected float m_saveDelayCustom;
 		protected float m_lastSave;
-		protected int m_pauseState = -1;
 		protected bool m_enableAutoSave = true;
 
 		public bool Initialzied => m_initialized;
 
-		protected T DataCollection => m_dataCollection;
+		public T DataCollection => m_dataCollection;
 
 		//============================================================================
 		// MonoBehaviour
@@ -45,18 +42,14 @@ namespace RCore.Data.JObject
 			}
 		}
 
+		private int m_pauseState = -1;
 		protected virtual void OnApplicationPause(bool pause)
 		{
 			if (!m_initialized || m_pauseState == (pause ? 0 : 1))
 				return;
 
 			m_pauseState = pause ? 0 : 1;
-			int utcNowTimestamp = TimeHelper.GetNowTimestamp(true);
-			int offlineSeconds = 0;
-			if (!pause)
-				offlineSeconds = GetOfflineSeconds();
-
-			m_dataCollection.OnPause(pause, utcNowTimestamp, offlineSeconds);
+			m_dataCollection.OnPause(pause);
 
 			if (pause && m_saveOnPause && m_enableAutoSave)
 				Save(true);
@@ -83,17 +76,15 @@ namespace RCore.Data.JObject
 				return false;
 
 			m_dataCollection.Load();
-			PostLoad();
+			m_dataCollection.PostLoad();
 			m_initialized = true;
 			onInitialized?.Invoke();
-			
-			EventDispatcher.AddListener<SaveGameEvent>(_ => Save());
 			return true;
 		}
 
 		public virtual bool Save(bool now = false, float saveDelayCustom = 0)
 		{
-			if (!m_enabledSave || !m_initialized)
+			if (!m_initialized)
 				return false;
 
 			if (now)
@@ -101,7 +92,7 @@ namespace RCore.Data.JObject
 				// Do not allow multiple Save calls within a short period of time.
 				if (Time.unscaledTime - m_lastSave < 0.2f)
 					return false;
-				m_dataCollection.Save();
+				m_dataCollection.SaveNow();
 				m_saveDelayCustom = 0; // Reset save delay custom
 				m_lastSave = Time.unscaledTime;
 				return true;
@@ -120,46 +111,11 @@ namespace RCore.Data.JObject
 			return false;
 		}
 
-		public virtual void Import(string data)
-		{
-			if (!m_enabledSave)
-				return;
-			m_dataCollection.Import(data);
-			PostLoad();
-		}
-
-		public virtual void EnableSave(bool value)
-		{
-			m_enabledSave = value;
-		}
-
 		protected void EnableAutoSave(bool pValue)
 		{
 			m_enableAutoSave = pValue;
 		}
 
-		public virtual int GetOfflineSeconds()
-		{
-			int offlineSeconds = 0;
-			if (m_dataCollection.session.data.lastActive > 0)
-			{
-				int utcNowTimestamp = TimeHelper.GetNowTimestamp(true);
-				offlineSeconds = utcNowTimestamp - m_dataCollection.session.data.lastActive;
-			}
-			return offlineSeconds;
-		}
-
-		//============================================================================
-		// Private / Protected
-		//============================================================================
-
-		protected virtual void PostLoad()
-		{
-			int offlineSeconds = GetOfflineSeconds();
-			var utcNowTimestamp = TimeHelper.GetNowTimestamp(true);
-			m_dataCollection.OnPostLoad(utcNowTimestamp, offlineSeconds);
-		}
+		public int GetOfflineSeconds() => m_dataCollection.session.GetOfflineSeconds();
 	}
-	
-	public struct SaveGameEvent : BaseEvent { }
 }

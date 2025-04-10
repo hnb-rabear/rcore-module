@@ -14,7 +14,9 @@ namespace RCore.Data.JObject
 	{
 		[AutoFill] public SessionModel session;
 
-		private List<IJObjectModel> m_models = new();
+		[NonSerialized] private bool m_initialized;
+		
+		protected List<IJObjectModel> m_models = new();
 
 		public virtual void Load()
 		{
@@ -23,7 +25,7 @@ namespace RCore.Data.JObject
 			CreateModel(session, "SessionData");
 		}
 
-		public virtual void Save()
+		public virtual void SaveNow()
 		{
 			if (m_models == null)
 				return;
@@ -45,26 +47,41 @@ namespace RCore.Data.JObject
 			foreach (var controller in m_models)
 				if (keyValuePairs.TryGetValue(controller.Data.key, out string value))
 					controller.Data.Load(value);
+			
+			PostLoad();
 		}
 
 		public void OnUpdate(float deltaTime)
 		{
+			if (!m_initialized)
+				return;
+
 			foreach (var controller in m_models)
 				controller.OnUpdate(deltaTime);
 		}
 
-		public void OnPause(bool pause, int utcNowTimestamp, int offlineSeconds)
+		public void OnPause(bool pause)
 		{
+			if (!m_initialized)
+				return;
+
+			int utcNowTimestamp = TimeHelper.GetNowTimestamp(true);
+			int offlineSeconds = 0;
+			if (!pause)
+				offlineSeconds = session.GetOfflineSeconds();
 			foreach (var handler in m_models)
 				handler.OnPause(pause, utcNowTimestamp, offlineSeconds);
 		}
 
-		public void OnPostLoad(int utcNowTimestamp, int offlineSeconds)
+		public void PostLoad()
 		{
+			int offlineSeconds = session.GetOfflineSeconds();
+			var utcNowTimestamp = TimeHelper.GetNowTimestamp(true);
 			foreach (var handler in m_models)
 				handler.OnPostLoad(utcNowTimestamp, offlineSeconds);
+			m_initialized = true;
 		}
-
+		
 		protected void CreateModel<TData>(JObjectModel<TData> @ref, string key, TData defaultVal = null) where TData : JObjectData, new()
 		{
 			if (string.IsNullOrEmpty(key))
@@ -122,7 +139,7 @@ namespace RCore.Data.JObject
 					m_collection.Load();
 
 				if (GUILayout.Button("Save"))
-					m_collection.Save();
+					m_collection.SaveNow();
 			}
 			EditorGUILayout.EndHorizontal();
 
