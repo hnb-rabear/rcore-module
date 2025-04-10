@@ -14,8 +14,6 @@ namespace RCore.Data.JObject
 	{
 		[AutoFill] public SessionModel session;
 
-		[NonSerialized] private bool m_initialized;
-		
 		protected List<IJObjectModel> m_models = new();
 
 		public virtual void Load()
@@ -53,18 +51,12 @@ namespace RCore.Data.JObject
 
 		public void OnUpdate(float deltaTime)
 		{
-			if (!m_initialized)
-				return;
-
 			foreach (var controller in m_models)
 				controller.OnUpdate(deltaTime);
 		}
 
 		public void OnPause(bool pause)
 		{
-			if (!m_initialized)
-				return;
-
 			int utcNowTimestamp = TimeHelper.GetNowTimestamp(true);
 			int offlineSeconds = 0;
 			if (!pause)
@@ -79,7 +71,6 @@ namespace RCore.Data.JObject
 			var utcNowTimestamp = TimeHelper.GetNowTimestamp(true);
 			foreach (var handler in m_models)
 				handler.OnPostLoad(utcNowTimestamp, offlineSeconds);
-			m_initialized = true;
 		}
 		
 		protected void CreateModel<TData>(JObjectModel<TData> @ref, string key, TData defaultVal = null) where TData : JObjectData, new()
