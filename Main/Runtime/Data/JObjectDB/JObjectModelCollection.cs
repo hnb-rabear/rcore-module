@@ -49,6 +49,38 @@ namespace RCore.Data.JObject
 			PostLoad();
 		}
 
+		public virtual void ImportData(Dictionary<string, object> data)
+		{
+			if (m_models == null)
+				return;
+
+			foreach (var model in m_models)
+			{
+				if (data.TryGetValue(model.Data.key, out var valueObject))
+				{
+					try
+					{
+						var valueStr = JsonConvert.SerializeObject(valueObject);
+						model.Data.Load(valueStr);
+					}
+					catch (Exception ex)
+					{
+						Debug.LogError($"Error deserializing data for key: {model.Data.key} - {ex.Message}");
+					}
+				}
+			}
+
+			PostLoad();
+		}
+
+		public Dictionary<string, object> GetData()
+		{
+			var data = new Dictionary<string, object>();
+			foreach (var model in m_models)
+				data.Add(model.Data.key, model.Data);
+			return data;
+		}
+
 		public virtual void OnUpdate(float deltaTime)
 		{
 			foreach (var controller in m_models)
