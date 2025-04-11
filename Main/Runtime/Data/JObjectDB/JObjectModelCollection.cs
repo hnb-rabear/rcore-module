@@ -49,7 +49,7 @@ namespace RCore.Data.JObject
 			PostLoad();
 		}
 
-		public virtual void ImportData(Dictionary<string, object> data)
+		public virtual void Import(Dictionary<string, object> data)
 		{
 			if (m_models == null)
 				return;
