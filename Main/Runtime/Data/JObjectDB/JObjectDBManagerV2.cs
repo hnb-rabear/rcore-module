@@ -70,16 +70,15 @@ namespace RCore.Data.JObject
 		// Public / Internal
 		//============================================================================
 
-		public virtual bool Init()
+		public virtual void Init()
 		{
 			if (m_initialized)
-				return false;
+				return;
 
 			m_dataCollection.Load();
 			m_dataCollection.PostLoad();
 			m_initialized = true;
 			onInitialized?.Invoke();
-			return true;
 		}
 
 		public virtual bool Save(bool now = false, float saveDelayCustom = 0)

@@ -119,7 +119,6 @@ namespace RCore
 			};
 			return WaitForCondition(@event);
 		}
-
 		public void RemoveConditionEvent(int id)
 		{
 			m_conditionEventsGroup.UnRegister(id);

@@ -10,19 +10,16 @@ using UnityEngine;
 
 namespace RCore.Data.JObject
 {
-	public class JObjectModelCollection : ScriptableObject
+	public partial class JObjectModelCollection : ScriptableObject
 	{
 		[AutoFill] public SessionModel session;
-
 		protected List<IJObjectModel> m_models = new();
-
 		public virtual void Load()
 		{
 			m_models = new List<IJObjectModel>();
 
 			CreateModel(session, "SessionData");
 		}
-
 		public virtual void Save()
 		{
 			if (m_models == null)
@@ -35,7 +32,6 @@ namespace RCore.Data.JObject
 				handler.Save();
 			PlayerPrefs.Save();
 		}
-
 		public virtual void Import(string jsonData)
 		{
 			if (m_models == null)
@@ -45,10 +41,9 @@ namespace RCore.Data.JObject
 			foreach (var controller in m_models)
 				if (keyValuePairs.TryGetValue(controller.Data.key, out string value))
 					controller.Data.Load(value);
-			
+
 			PostLoad();
 		}
-
 		public virtual void Import(Dictionary<string, object> data)
 		{
 			if (m_models == null)
@@ -72,7 +67,6 @@ namespace RCore.Data.JObject
 
 			PostLoad();
 		}
-
 		public Dictionary<string, object> GetData()
 		{
 			var data = new Dictionary<string, object>();
@@ -80,13 +74,11 @@ namespace RCore.Data.JObject
 				data.Add(model.Data.key, model.Data);
 			return data;
 		}
-
 		public virtual void OnUpdate(float deltaTime)
 		{
 			foreach (var controller in m_models)
 				controller.OnUpdate(deltaTime);
 		}
-
 		public virtual void OnPause(bool pause)
 		{
 			int utcNowTimestamp = TimeHelper.GetNowTimestamp(true);
@@ -96,7 +88,6 @@ namespace RCore.Data.JObject
 			foreach (var handler in m_models)
 				handler.OnPause(pause, utcNowTimestamp, offlineSeconds);
 		}
-
 		public virtual void PostLoad()
 		{
 			int offlineSeconds = session.GetOfflineSeconds();
@@ -104,7 +95,6 @@ namespace RCore.Data.JObject
 			foreach (var handler in m_models)
 				handler.OnPostLoad(utcNowTimestamp, offlineSeconds);
 		}
-		
 		protected void CreateModel<TData>(JObjectModel<TData> @ref, string key, TData defaultVal = null) where TData : JObjectData, new()
 		{
 			if (string.IsNullOrEmpty(key))
@@ -114,7 +104,6 @@ namespace RCore.Data.JObject
 			@ref.Init();
 			m_models.Add(@ref);
 		}
-		
 		protected void CreateModel<TData>(JObjectModel<TData> @ref, TData defaultVal = null) where TData : JObjectData, new()
 		{
 			if (string.IsNullOrEmpty(@ref.key))
