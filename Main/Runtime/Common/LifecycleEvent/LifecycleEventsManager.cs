@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace RCore
 {
-	public interface INonMonoBehaviour
+	public interface ILifecycleEvent
 	{
 		void Start();
 		void Update();
@@ -14,14 +14,14 @@ namespace RCore
 	}
 
 	/// <summary>
-	/// A Singleton MonoBehaviour that manages the lifecycle (Update, Pause, Focus, Quit)
-	/// for registered non-MonoBehaviour objects implementing INoMonoBehaviour.
+	/// A Singleton MonoBehaviour that manages the lifecycle (Update, Pause, Focus, Quit, ...)
+	/// for registered non-MonoBehaviour objects implementing ILifecycleEvent.
 	/// It persists across scene loads.
 	/// </summary>
-	public class NonMonoBehaviourManager : MonoBehaviour
+	public class LifecycleEventsManager : MonoBehaviour
 	{
-		private static NonMonoBehaviourManager m_Instance;
-		public static NonMonoBehaviourManager Instance
+		private static LifecycleEventsManager m_Instance;
+		public static LifecycleEventsManager Instance
 		{
 			get
 			{
@@ -32,13 +32,13 @@ namespace RCore
 
 				// Try to find an existing instance in the scene
 				// Handles cases like domain reload where static ref might be lost
-				m_Instance = FindObjectOfType<NonMonoBehaviourManager>();
+				m_Instance = FindObjectOfType<LifecycleEventsManager>();
 
 				if (m_Instance == null)
 				{
 					// No instance found, create a new one
-					var obj = new GameObject(nameof(NonMonoBehaviourManager));
-					m_Instance = obj.AddComponent<NonMonoBehaviourManager>();
+					var obj = new GameObject(nameof(LifecycleEventsManager));
+					m_Instance = obj.AddComponent<LifecycleEventsManager>();
 
 					// Hide it from hierarchy, don't save it to scenes,
 					// and don't destroy it when loading new scenes.
@@ -58,9 +58,9 @@ namespace RCore
 		}
 
 		// List to hold registered objects
-		private readonly List<INonMonoBehaviour> m_noMonoBehaviours = new();
+		private readonly List<ILifecycleEvent> m_noMonoBehaviours = new();
 		// Buffer for safe removal during iteration
-		private readonly List<INonMonoBehaviour> m_toRemove = new();
+		private readonly List<ILifecycleEvent> m_toRemove = new();
 		// Flag to prevent list modification exceptions during loops
 		private bool m_isIterating;
 
@@ -68,11 +68,11 @@ namespace RCore
 		/// Registers an object implementing INoMonoBehaviour to receive lifecycle callbacks.
 		/// </summary>
 		/// <param name="obj">The object to register.</param>
-		public void Register(INonMonoBehaviour obj)
+		public void Register(ILifecycleEvent obj)
 		{
 			if (obj == null)
 			{
-				Debug.LogWarning($"{nameof(NonMonoBehaviourManager)}: Attempted to register a null object.");
+				Debug.LogWarning($"{nameof(LifecycleEventsManager)}: Attempted to register a null object.");
 				return;
 			}
 
@@ -81,13 +81,13 @@ namespace RCore
 			{
 				m_noMonoBehaviours.Add(obj);
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
-				Debug.Log($"{nameof(NonMonoBehaviourManager)}: Registered {obj.GetType().Name} ({obj.GetHashCode()}). Count: {m_noMonoBehaviours.Count}");
+				Debug.Log($"{nameof(LifecycleEventsManager)}: Registered {obj.GetType().Name} ({obj.GetHashCode()}). Count: {m_noMonoBehaviours.Count}");
 #endif
 			}
 			else
 			{
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
-				Debug.LogWarning($"{nameof(NonMonoBehaviourManager)}: Attempted to register duplicate object {obj.GetType().Name} ({obj.GetHashCode()}).");
+				Debug.LogWarning($"{nameof(LifecycleEventsManager)}: Attempted to register duplicate object {obj.GetType().Name} ({obj.GetHashCode()}).");
 #endif
 			}
 		}
@@ -96,11 +96,11 @@ namespace RCore
 		/// Unregisters an object, preventing it from receiving further lifecycle callbacks.
 		/// </summary>
 		/// <param name="obj">The object to unregister.</param>
-		public void Unregister(INonMonoBehaviour obj)
+		public void Unregister(ILifecycleEvent obj)
 		{
 			if (obj == null)
 			{
-				Debug.LogWarning("NonMonoBehaviourManager: Attempted to unregister a null object.");
+				Debug.LogWarning($"{nameof(LifecycleEventsManager)}: Attempted to unregister a null object.");
 				return;
 			}
 
@@ -114,7 +114,7 @@ namespace RCore
 				{
 					m_toRemove.Add(obj);
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
-					Debug.Log($"{nameof(NonMonoBehaviourManager)}: Queued {obj.GetType().Name} ({obj.GetHashCode()}) for removal. Count: {m_noMonoBehaviours.Count - m_toRemove.Count}");
+					Debug.Log($"{nameof(LifecycleEventsManager)}: Queued {obj.GetType().Name} ({obj.GetHashCode()}) for removal. Count: {m_noMonoBehaviours.Count - m_toRemove.Count}");
 #endif
 				}
 			}
@@ -124,19 +124,19 @@ namespace RCore
 				if (m_noMonoBehaviours.Remove(obj))
 				{
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
-					Debug.Log($"{nameof(NonMonoBehaviourManager)}: Unregistered {obj.GetType().Name} ({obj.GetHashCode()}). Count: {m_noMonoBehaviours.Count}");
+					Debug.Log($"{nameof(LifecycleEventsManager)}: Unregistered {obj.GetType().Name} ({obj.GetHashCode()}). Count: {m_noMonoBehaviours.Count}");
 #endif
 				}
 				else if (wasPresent)
 				{
 					// This case should ideally not happen if Contains was true, but handles edge cases.
-					Debug.LogWarning($"{nameof(NonMonoBehaviourManager)}: Failed to remove {obj.GetType().Name} ({obj.GetHashCode()}) directly even though Contains returned true.");
+					Debug.LogWarning($"{nameof(LifecycleEventsManager)}: Failed to remove {obj.GetType().Name} ({obj.GetHashCode()}) directly even though Contains returned true.");
 				}
 				else
 				{
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
 					// Don't warn if simply trying to unregister something not present or already unregistered.
-					// Debug.Log($"{nameof(NonMonoBehaviourManager)}: Attempted to unregister {obj.GetType().Name} ({obj.GetHashCode()}) which was not registered.");
+					// Debug.Log($"{nameof(LifecycleEventsManager)}: Attempted to unregister {obj.GetType().Name} ({obj.GetHashCode()}) which was not registered.");
 #endif
 				}
 			}
@@ -154,7 +154,7 @@ namespace RCore
 					if (m_noMonoBehaviours.Remove(item))
 					{
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
-						Debug.Log($"{nameof(NonMonoBehaviourManager)}: Completed removal of {item.GetType().Name} ({item.GetHashCode()}). Count: {m_noMonoBehaviours.Count}");
+						Debug.Log($"{nameof(LifecycleEventsManager)}: Completed removal of {item.GetType().Name} ({item.GetHashCode()}). Count: {m_noMonoBehaviours.Count}");
 #endif
 					}
 				}
@@ -248,7 +248,7 @@ namespace RCore
 
 		private void OnApplicationQuit()
 		{
-			Debug.Log("NonMonoBehaviourManager: Application quitting. Calling OnApplicationQuit on registered objects.");
+			Debug.Log($"{nameof(LifecycleEventsManager)}: Application quitting. Calling OnApplicationQuit on registered objects.");
 			// No need to process removals, application is ending.
 			m_isIterating = true; // Set flag just in case, though unlikely to matter
 			try
@@ -275,7 +275,7 @@ namespace RCore
 			// Clear lists on quit
 			m_noMonoBehaviours.Clear();
 			m_toRemove.Clear();
-			Debug.Log("NonMonoBehaviourManager: Registered objects list cleared.");
+			Debug.Log($"{nameof(LifecycleEventsManager)}: Registered objects list cleared.");
 
 			// Optional: Explicitly null the static instance if needed elsewhere
 			// though the application ending handles memory cleanup.
@@ -292,7 +292,7 @@ namespace RCore
 				// to allow garbage collection and prevent issues on re-entering play mode
 				// without domain reload.
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
-				Debug.Log($"{nameof(NonMonoBehaviourManager)} OnDestroy: Singleton instance ({this.GetInstanceID()}) is being destroyed.");
+				Debug.Log($"{nameof(LifecycleEventsManager)} OnDestroy: Singleton instance ({this.GetInstanceID()}) is being destroyed.");
 #endif
 				// Don't call OnApplicationQuit here as the 'quitting' intent is handled by OnApplicationQuit itself.
 				// Clear lists just in case.

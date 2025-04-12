@@ -5,23 +5,23 @@ using System.Collections.Generic;
 
 namespace RCore
 {
-	public static class NonMonoBehaviourAutoLoader
+	public static class LifecycleEventsAutoLoader
 	{
-		// Run this after the scene loads to ensure NonMonoBehaviourManager potentially exists
+		// Run this after the scene loads to ensure LifecycleEventsManager potentially exists
 		// Adjust RuntimeInitializeLoadType if needed (e.g., BeforeSceneLoad if required earlier)
 		[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
 		public static void InitializeAndRegisterAll()
 		{
-			// Ensure NonMonoBehaviourManager instance is ready BEFORE we try registering.
+			// Ensure LifecycleEventsManager instance is ready BEFORE we try registering.
 			// Accessing Instance getter handles its creation.
-			var manager = NonMonoBehaviourManager.Instance;
+			var manager = LifecycleEventsManager.Instance;
 			if (manager == null)
 			{
-				Debug.LogError("NonMonoBehaviourManager instance could not be created. Auto-registration aborted.");
+				Debug.LogError($"{nameof(LifecycleEventsManager)} instance could not be created. Auto-registration aborted.");
 				return;
 			}
 
-			Debug.Log("Scanning for AutoRegisterWithNonMonoBehaviorAttribute types...");
+			Debug.Log($"Scanning for {nameof(LifecycleEventAttribute)} types...");
 
 			var typesToRegister = new List<Type>();
 			var assemblies = AppDomain.CurrentDomain.GetAssemblies();
@@ -42,13 +42,13 @@ namespace RCore
 						// 3. It implements INoMonoBehaviour
 						// 4. It has the [AutoRegisterWithNonMonoBehaviorAttribute] attribute
 						if (type.IsClass && !type.IsAbstract &&
-						    typeof(INonMonoBehaviour).IsAssignableFrom(type) &&
-						    type.GetCustomAttribute<NonMonoBehaviorAttribute>() != null)
+						    typeof(ILifecycleEvent).IsAssignableFrom(type) &&
+						    type.GetCustomAttribute<LifecycleEventAttribute>() != null)
 						{
 							// Check for parameterless constructor
 							if (type.GetConstructor(Type.EmptyTypes) == null)
 							{
-								Debug.LogWarning($"Type {type.Name} has [AutoRegisterWithNonMonoBehaviorAttribute] but lacks a parameterless constructor. Skipping.");
+								Debug.LogWarning($"Type {type.Name} has [{nameof(LifecycleEventAttribute)}] but lacks a parameterless constructor. Skipping.");
 								continue;
 							}
 							typesToRegister.Add(type);
@@ -77,7 +77,7 @@ namespace RCore
 				try
 				{
 					// Create an instance (requires parameterless constructor)
-					var instance = (INonMonoBehaviour)Activator.CreateInstance(type);
+					var instance = (ILifecycleEvent)Activator.CreateInstance(type);
 
 					// Register it
 					manager.Register(instance);

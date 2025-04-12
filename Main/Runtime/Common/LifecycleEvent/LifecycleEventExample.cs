@@ -1,8 +1,8 @@
 #if UNITY_EDITOR
 namespace RCore.Examples
 {
-	[NonMonoBehavior] // Add this attribute!
-	public class AutoDetectedService : INonMonoBehaviour
+	[LifecycleEvent] // Add this attribute!
+	public class AutoDetectedService : ILifecycleEvent
 	{
 		// MUST have a parameterless constructor for Activator.CreateInstance
 		public AutoDetectedService()
@@ -17,12 +17,12 @@ namespace RCore.Examples
 		{
 			Debug.Log("AutoDetectedService quitting.");
 			// Note: Automatic unregistration isn't built-in here.
-			// NonMonoBehaviourManager clears its list OnApplicationQuit anyway.
+			// LifecycleEventsManager clears its list OnApplicationQuit anyway.
 		}
 	}
 
 	// This class will NOT be auto-registered because it lacks the attribute
-	public class ManualService : INonMonoBehaviour
+	public class ManualService : ILifecycleEvent
 	{
 		public void Start() { }
 		public void Update() { }

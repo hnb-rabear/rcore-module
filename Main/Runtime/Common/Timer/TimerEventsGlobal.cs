@@ -24,10 +24,8 @@ namespace RCore
 			}
 		}
 
-		protected override void Update()
+		protected void Update()
 		{
-			base.Update();
-			
 			lock (m_ExecutionQueue)
 			{
 				while (m_ExecutionQueue.Count > 0)
