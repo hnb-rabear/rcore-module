@@ -255,19 +255,22 @@ namespace RCore.UI
 			{
 #if DOTWEEN
 				float fromY = 1 - scrollView.normalizedPosition.y;
-				float time = Mathf.Abs(toY - fromY) * 2;
-				if (time < 0.1f && time > 0)
-					time = 0.1f;
-				float val = fromY;
-				DOTween.To(() => val, x => val = x, toY, time)
-					.OnUpdate(() =>
-					{
-						scrollView.normalizedPosition = new Vector2(scrollView.normalizedPosition.x, 1f - val);
-					})
-					.OnComplete(() =>
-					{
-						pOnComplete?.Invoke();
-					});
+				if (toY != fromY)
+				{
+					float time = Mathf.Abs(toY - fromY) * 2;
+					if (time < 0.1f && time > 0)
+						time = 0.1f;
+					float val = fromY;
+					DOTween.To(() => val, x => val = x, toY, time)
+						.OnUpdate(() =>
+						{
+							scrollView.normalizedPosition = new Vector2(scrollView.normalizedPosition.x, 1f - val);
+						})
+						.OnComplete(() =>
+						{
+							pOnComplete?.Invoke();
+						});
+				}
 #else
 				scrollView.normalizedPosition = new Vector2(scrollView.normalizedPosition.x, 1f - toY);
 				pOnComplete?.Invoke();
