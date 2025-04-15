@@ -19,6 +19,7 @@ namespace RCore.UI
 {
 	public class OptimizedVerticalScrollView : MonoBehaviour
 	{
+		public Action onContentUpdated;
 		public ScrollRect scrollView;
 		public RectTransform container;
 		public OptimizedScrollItem prefab;
@@ -200,6 +201,7 @@ namespace RCore.UI
 				m_itemsScrolled[i].visible = IsItemVisible(viewportRect, i);
 				newIndex++;
 			}
+			onContentUpdated?.Invoke();
 		}
 
 		private void CheckItemsInViewPort()
