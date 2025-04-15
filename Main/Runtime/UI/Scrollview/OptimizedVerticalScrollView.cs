@@ -9,6 +9,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using RCore.Inspector;
+using System;
+using System.Collections;
 #if ODIN_INSPECTOR
 using Sirenix.OdinInspector;
 #endif
@@ -50,14 +52,14 @@ namespace RCore.UI
 
 		}
 
-		public void Init(OptimizedScrollItem pPrefab, int pTotalItems, bool pForce)
+		public void Init(OptimizedScrollItem pPrefab, int pTotalItems, bool pForce, int startIndex)
 		{
 			prefab = pPrefab;
 			m_itemsScrolled.Free();
 			for (int i = 0; i < m_itemsScrolled.Count; i++)
 				m_itemsScrolled[i].Refresh();
 
-			Init(pTotalItems, pForce);
+			Init(pTotalItems, pForce, startIndex);
 		}
 
 		private void LateUpdate()
@@ -66,7 +68,7 @@ namespace RCore.UI
 				m_itemsScrolled[i].ManualUpdate();
 		}
 
-		public void Init(int pTotalItems, bool pForce)
+		public void Init(int pTotalItems, bool pForce, int startIndex)
 		{
 			if (pTotalItems == total && !pForce)
 				return;
@@ -100,7 +102,7 @@ namespace RCore.UI
 
 			var scrollRect = scrollView.transform as RectTransform;
 
-			//Re Update min-max view size
+			// Re Update min-max view size
 			if (autoMatchHeight)
 			{
 				float preferHeight = container.rect.size.y + spacing * 2;
@@ -121,26 +123,26 @@ namespace RCore.UI
 			m_offsetVec = Vector3.down;
 			m_startPos = container.anchoredPosition3D - m_offsetVec * m_halfSizeContainer + m_offsetVec * (prefabScale.y * 0.5f);
 			m_optimizedTotal = Mathf.Min(total, m_totalVisible + m_totalBuffer);
-
+			startIndex = Mathf.Clamp(startIndex, 0, total - m_optimizedTotal - 1);
 			for (int i = 0; i < m_optimizedTotal; i++)
 			{
-				int cellIndex = i % totalCellOnRow;
-				int rowIndex = Mathf.FloorToInt(i * 1f / totalCellOnRow);
+				var cellIndex = (i + startIndex) % totalCellOnRow;
+				var rowIndex = Mathf.FloorToInt((i + startIndex) * 1f / totalCellOnRow);
 
 				var item = m_itemsScrolled.Obtain(container);
 				var rt = item.transform as RectTransform;
-				rt.anchoredPosition3D = m_startPos + m_offsetVec * rowIndex * m_cellSizeY;
+				rt.anchoredPosition3D = m_startPos + m_offsetVec * (rowIndex * m_cellSizeY);
 				rt.anchoredPosition3D = new Vector3(-container.rect.size.x / 2 + cellIndex * m_prefabSizeX + m_prefabSizeX * 0.5f,
 					rt.anchoredPosition3D.y,
 					rt.anchoredPosition3D.z);
 				m_itemsRect.Add(rt);
 
 				item.gameObject.SetActive(true);
-				item.UpdateContent(i, true);
+				item.UpdateContent(i + startIndex, true);
 			}
 
 			prefab.gameObject.SetActive(false);
-			container.anchoredPosition3D += m_offsetVec * (m_halfSizeContainer - viewport.rect.size.y * 0.5f);
+			container.anchoredPosition3D += m_offsetVec * (m_halfSizeContainer - viewport.rect.size.y * 0.5f) + new Vector3(0, startIndex * m_cellSizeY, 0);
 		}
 
 #if ODIN_INSPECTOR
@@ -239,7 +241,7 @@ namespace RCore.UI
 #if ODIN_INSPECTOR
 		[Button]
 #endif
-		public void ScrollToIndex(int pIndex, bool pTween = false)
+		public void ScrollToIndex(int pIndex, bool pTween = false, Action pOnComplete = null)
 		{
 			pIndex = Mathf.Clamp(pIndex, 0, total - 1);
 			int rowIndex = Mathf.FloorToInt(pIndex * 1f / totalCellOnRow);
@@ -250,31 +252,29 @@ namespace RCore.UI
 			if (pTween)
 			{
 #if DOTWEEN
-				float fromY = content.anchoredPosition.y;
-				float time = Mathf.Abs(fromY - toY) / 5000f;
-				if (time == 0)
-					content.anchoredPosition = new Vector2(0, toY);
-				else if (time < 0.04f)
-					time = 0.04f;
-				else if (time > 0.4f)
-					time = 0.4f;
+				float fromY = 1 - scrollView.normalizedPosition.y;
+				float time = Mathf.Abs(toY - fromY) * 2;
+				if (time < 0.1f && time > 0)
+					time = 0.1f;
 				float val = fromY;
 				DOTween.To(() => val, x => val = x, toY, time)
 					.OnUpdate(() =>
 					{
-						content.anchoredPosition = new Vector2(0, val);
+						scrollView.normalizedPosition = new Vector2(scrollView.normalizedPosition.x, 1f - val);
 					})
 					.OnComplete(() =>
 					{
-						content.anchoredPosition = new Vector2(0, toY);
+						pOnComplete?.Invoke();
 					});
 #else
 				scrollView.normalizedPosition = new Vector2(scrollView.normalizedPosition.x, 1f - toY);
+				pOnComplete?.Invoke();
 #endif
 			}
 			else
 			{
 				scrollView.normalizedPosition = new Vector2(scrollView.normalizedPosition.x, 1f - toY);
+				pOnComplete?.Invoke();
 			}
 		}
 
@@ -295,6 +295,33 @@ namespace RCore.UI
 			var viewportTop = scrollView.viewport.TopRight().y;
 			var viewportBot = scrollView.viewport.BotLeft().y;
 			return true;
+		}
+
+		// Moves item A at index `a` to the position of item B at index `b`.
+		// Clone the Item A at the position of original Item A
+
+
+		// Item A will move to the new position, and the content will scroll accordingly.\
+
+		// Move the cloned item A to the position of Item B.
+		// Item B will be pushed down to make space for item A.
+#if ODIN_INSPECTOR
+		[Button]
+#endif
+		public void TestMoveItemToIndex(int a, int b)
+		{
+			StartCoroutine(MoveItemToIndex(a, b));
+		}
+
+		public IEnumerator MoveItemToIndex(int a, int b)
+		{
+			if (a < 0 || a >= total || b < 0 || b >= total || a == b)
+				yield break;
+
+			bool wait = true;
+			ScrollToIndex(a, true, () => wait = false);
+			yield return new WaitUntil(() => !wait);
+			ScrollToIndex(b, true);
 		}
 	}
 }
