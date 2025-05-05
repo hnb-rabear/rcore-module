@@ -14,12 +14,13 @@ namespace RCore.UI
 		private bool m_refresh;
 		public bool visible { get; set; }
 
-		public void UpdateContent(int pIndex, bool pForced = false)
+		public bool UpdateContent(int pIndex, bool pForced = false)
 		{
 			if (m_index.Equals(pIndex) && !pForced)
-				return;
+				return false;
 			m_index = pIndex;
 			m_refresh = true;
+			return true;
 		}
         
 		public void ManualUpdate()

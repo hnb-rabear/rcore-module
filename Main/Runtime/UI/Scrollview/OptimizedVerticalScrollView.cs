@@ -151,21 +151,62 @@ namespace RCore.UI
 #if ODIN_INSPECTOR
 		[Button]
 #endif
-		public void ScrollToTop()
+		public void ScrollToTop(bool tween = false)
 		{
 			scrollView.StopMovement();
-			scrollView.normalizedPosition = new Vector2(scrollView.normalizedPosition.x, 1);
+			if (tween)
+			{
+#if DOTWEEN
+				float fromY = scrollView.normalizedPosition.y;
+				float toY = 1f;
+				if (fromY != toY)
+				{
+					float time = Mathf.Abs(toY - fromY);
+					if (time < 0.1f && time > 0)
+						time = 0.1f;
+					float val = fromY;
+					DOTween.To(() => val, x => val = x, toY, time)
+						.OnUpdate(() => scrollView.normalizedPosition = new Vector2(scrollView.normalizedPosition.x, val));
+				}
+#else
+				scrollView.normalizedPosition = new Vector2(scrollView.normalizedPosition.x, 1);
+#endif
+			}
+			else
+			{
+				scrollView.normalizedPosition = new Vector2(scrollView.normalizedPosition.x, 1);
+			}
 		}
 
 #if ODIN_INSPECTOR
 		[Button]
 #endif
-		public void ScrollToBot()
+		public void ScrollToBot(bool tween = false)
 		{
 			scrollView.StopMovement();
-			scrollView.normalizedPosition = new Vector2(scrollView.normalizedPosition.x, 0);
+			if (tween)
+			{
+#if DOTWEEN
+				float fromY = scrollView.normalizedPosition.y;
+				float toY = 0f;
+				if (fromY != toY)
+				{
+					float time = Mathf.Abs(toY - fromY);
+					if (time < 0.1f && time > 0)
+						time = 0.1f;
+					float val = fromY;
+					DOTween.To(() => val, x => val = x, toY, time)
+						.OnUpdate(() => scrollView.normalizedPosition = new Vector2(scrollView.normalizedPosition.x, val));
+				}
+#else
+				scrollView.normalizedPosition = new Vector2(scrollView.normalizedPosition.x, 0);
+#endif
+			}
+			else
+			{
+				scrollView.normalizedPosition = new Vector2(scrollView.normalizedPosition.x, 0);
+			}
 		}
-
 		private void ScrollBarChanged(Vector2 pNormPos)
 		{
 			if (m_optimizedTotal <= 0)
