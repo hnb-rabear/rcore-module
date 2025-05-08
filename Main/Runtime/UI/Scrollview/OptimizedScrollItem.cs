@@ -22,7 +22,9 @@ namespace RCore.UI
 			m_refresh = true;
 			return true;
 		}
-        
+
+		public virtual void UpdateContent(object data) { }
+
 		public void ManualUpdate()
 		{
 			if (m_refresh && gameObject.activeInHierarchy)
