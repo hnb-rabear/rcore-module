@@ -364,7 +364,7 @@ namespace RCore.UI
 		{
 			Init();
 			RefreshPositions();
-			
+
 			foreach (var a in m_childrenGroup)
 			{
 				var children = a.Value;
@@ -429,6 +429,16 @@ namespace RCore.UI
 			m_lerp = 0;
 			DOTween.Kill(GetInstanceID());
 			DOTween.To(val => m_lerp = val, 0f, 1f, tweenTime)
+				.OnStart(() =>
+				{
+					foreach (var a in m_childrenGroup)
+					{
+						var children = a.Value;
+						for (int j = 0; j < children.Count; j++)
+							if (children[j].TryGetComponent(out ITweenItem item))
+								item.OnStart();
+					}
+				})
 				.OnUpdate(() =>
 				{
 					float t = m_lerp;
@@ -449,6 +459,14 @@ namespace RCore.UI
 				})
 				.OnComplete(() =>
 				{
+					foreach (var a in m_childrenGroup)
+					{
+						var children = a.Value;
+						for (int j = 0; j < children.Count; j++)
+							if (children[j].TryGetComponent(out ITweenItem item))
+								item.OnFinish();
+					}
+
 					if (m_AutoResizeContentX || m_AutoResizeContentY)
 						AutoResizeContent();
 
@@ -463,6 +481,14 @@ namespace RCore.UI
 		private IEnumerator IEArrangeChildren(Dictionary<int, List<RectTransform>> childrenGroup, Dictionary<int, Vector3[]> initialPositions, Dictionary<int, Vector3[]> finalPositions,
 			float pDuration, Action pOnCompleted)
 		{
+			foreach (var a in m_childrenGroup)
+			{
+				var children = a.Value;
+				for (int j = 0; j < children.Count; j++)
+					if (children[j].TryGetComponent(out ITweenItem item))
+						item.OnStart();
+			}
+
 			float time = 0;
 			while (true)
 			{
@@ -491,6 +517,14 @@ namespace RCore.UI
 					break;
 				yield return null;
 				time += Time.deltaTime;
+			}
+
+			foreach (var a in m_childrenGroup)
+			{
+				var children = a.Value;
+				for (int j = 0; j < children.Count; j++)
+					if (children[j].TryGetComponent(out ITweenItem item))
+						item.OnFinish();
 			}
 
 			pOnCompleted?.Invoke();
