@@ -121,8 +121,8 @@ namespace RCore.Service
 			AppLovinConfig appLovinConfig = default;
 			AdMobConfig adMobConfig = default;
 #if UNITY_IOS
-			appLovinConfig = m_iosAppLovinCfg;
-			adMobConfig = m_iosAdMobCfg;
+			appLovinConfig = iosAppLovinCfg;
+			adMobConfig = iosAdMobCfg;
 #elif UNITY_ANDROID
 			appLovinConfig = androidAppLovinCfg;
 			adMobConfig = androidAdMobCfg;
