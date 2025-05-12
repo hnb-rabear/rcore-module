@@ -1,4 +1,6 @@
+#if ADMOB
 using GoogleMobileAds.Ump.Api;
+#endif
 using System;
 using RCore.Inspector;
 using UnityEngine;
