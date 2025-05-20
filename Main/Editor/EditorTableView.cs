@@ -17,7 +17,7 @@ namespace RCore.Editor
 
 		public class ColumnDef
 		{
-			internal MultiColumnHeaderState.Column column;
+			public MultiColumnHeaderState.Column column;
 			internal DrawItem onDraw;
 			internal Comparison<TData> onSort;
 			public bool showToggle;
