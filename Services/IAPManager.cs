@@ -43,6 +43,7 @@ namespace RCore.Service
 		private CrossPlatformValidator m_validator;
 		private RPlayerPrefDict<string, string> m_cacheLocalizedPrices;
 		private string m_placement;
+		public bool processing;
 
 #region Init
 
@@ -119,6 +120,7 @@ namespace RCore.Service
 
 		public void Purchase(string productId, Action<Product> pOnPurchaseSucceed, Action<Product> pOnPurchaseFailed = null, Action<Product> pOnPurchaseDeferred = null, string pPlacement = null)
 		{
+			processing = true;
 			m_placement = pPlacement;
 			m_onPurchaseSucceed = pOnPurchaseSucceed;
 			m_onPurchaseFailed = pOnPurchaseFailed;
@@ -143,13 +145,14 @@ namespace RCore.Service
 			{
 				m_onPurchaseSucceed?.Invoke(product);
 				OnIAPSucceed?.Invoke(m_placement, product);
-				m_placement = null;
 			}
 			else
 			{
 				m_onPurchaseFailed?.Invoke(product);
 				OnIAPFailed?.Invoke(product, "invalid");
 			}
+			m_placement = null;
+			processing = false;
 			return PurchaseProcessingResult.Complete;
 		}
 
@@ -157,7 +160,7 @@ namespace RCore.Service
 		{
 			m_onPurchaseFailed?.Invoke(product);
 			OnIAPFailed?.Invoke(product, failureReason.ToString());
-
+			processing = false;
 			Debug.Log($"Purchase failed - Product: '{product.definition.id}', PurchaseFailureReason: {failureReason}");
 		}
 
@@ -165,7 +168,7 @@ namespace RCore.Service
 		{
 			m_onPurchaseFailed?.Invoke(product);
 			OnIAPFailed?.Invoke(product, failureDescription.reason.ToString());
-
+			processing = false;
 			Debug.Log($"Purchase failed - Product: '{product.definition.id}'," + $" Purchase failure reason: {failureDescription.reason}," + $" Purchase failure details: {failureDescription.message}");
 		}
 
@@ -243,8 +246,17 @@ namespace RCore.Service
 
 		public void Restore(Action<bool, string> onRestore)
 		{
-			m_googlePlayStoreExtensions?.RestoreTransactions(onRestore);
-			m_appleExtensions?.RestoreTransactions(onRestore);
+			processing = true;
+			m_googlePlayStoreExtensions?.RestoreTransactions((a,b) =>
+			{
+				onRestore?.Invoke(a, b);
+				processing = false;
+			});
+			m_appleExtensions?.RestoreTransactions((a, b) =>
+			{
+				onRestore?.Invoke(a, b);
+				processing = false;
+			});
 		}
 
 		public bool IsSubscribedTo(Product product)
