@@ -101,7 +101,6 @@ namespace RCore.Service
 			{
 				m_appleExtensions = extensions.GetExtension<IAppleExtensions>();
 				m_appleExtensions.RegisterPurchaseDeferredListener(OnDeferredPurchase);
-				m_appleExtensions.simulateAskToBuy = true; // Only applies to Sandbox testing
 			}
 			else if (Application.platform == RuntimePlatform.Android)
 			{
