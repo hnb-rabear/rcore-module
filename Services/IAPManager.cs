@@ -47,6 +47,14 @@ namespace RCore.Service
 
 #region Init
 
+		private void Awake()
+		{
+			if (m_Instance == null)
+				m_Instance = this;
+			else if (m_Instance != this)
+				Destroy(gameObject);
+		}
+
 		public async void Init(Dictionary<string, ProductType> pProducts, Action<bool> pCallback)
 		{
 			if (m_initialized)
