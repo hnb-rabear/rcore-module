@@ -151,7 +151,7 @@ namespace RCore.Service
 			if (isPurchaseValid)
 			{
 				m_onPurchaseSucceed?.Invoke(product);
-				OnIAPSucceed?.Invoke(m_placement, product);
+				OnIAPSucceed?.Invoke(m_placement, e);
 			}
 			else
 			{
