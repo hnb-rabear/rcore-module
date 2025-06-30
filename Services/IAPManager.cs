@@ -30,7 +30,7 @@ namespace RCore.Service
 		
 		[SerializeField] private SerializableDictionary<string, ProductType> m_products;
 
-		public static Action<string, Product> OnIAPSucceed;
+		public static Action<string, PurchaseEventArgs> OnIAPSucceed;
 		public static Action<Product, string> OnIAPFailed;
 		private Action<bool> m_onInitialized;
 		private Action<Product> m_onPurchaseDeferred;
@@ -151,7 +151,7 @@ namespace RCore.Service
 			if (isPurchaseValid)
 			{
 				m_onPurchaseSucceed?.Invoke(product);
-				OnIAPSucceed?.Invoke(m_placement, product);
+				OnIAPSucceed?.Invoke(m_placement, e);
 			}
 			else
 			{
