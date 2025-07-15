@@ -329,5 +329,19 @@ namespace RCore.Service
 			PlayerPrefs.SetString(BACK_UP_KEY, content);
 			m_Changed = false;
 		}
+
+		public static void RegisterOnFetchedEvent(Action listener)
+		{
+			if (listener != null)
+				OnFetched += listener;
+			if (Fetched)
+				listener?.Invoke();
+		}
+
+		public static void UnregisterOnFetchedEvent(Action listener)
+		{
+			if (listener != null)
+				OnFetched -= listener;
+		}
 	}
 }
