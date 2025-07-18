@@ -381,36 +381,6 @@ namespace RCore
 		}
 
 		/// <summary>
-		/// Combines meshes from a list of Transforms into a single mesh.
-		/// </summary>
-		[Obsolete("This method is obsolete. Consider using Unity's built-in Static Batching or a more robust mesh combination solution.")]
-		public static void CombineMeshes(List<Transform> pMeshObjects, Material pMat, ref GameObject combinedMesh, bool pDestroyOriginal)
-		{
-			if (combinedMesh == null)
-			{
-				combinedMesh = new GameObject();
-				combinedMesh.GetOrAddComponent<MeshRenderer>();
-				combinedMesh.GetOrAddComponent<MeshFilter>();
-			}
-
-			var combine = new CombineInstance[pMeshObjects.Count];
-			for (int i = 0; i < pMeshObjects.Count; i++)
-			{
-				MeshFilter meshFilter = pMeshObjects[i].GetComponent<MeshFilter>();
-				combine[i].mesh = meshFilter.sharedMesh;
-				combine[i].transform = meshFilter.transform.localToWorldMatrix;
-				pMeshObjects[i].gameObject.SetActive(false);
-				if (pDestroyOriginal)
-					UnityEngine.Object.DestroyImmediate(pMeshObjects[i].gameObject);
-			}
-
-			var filter = combinedMesh.GetOrAddComponent<MeshFilter>();
-			filter.sharedMesh = new Mesh();
-			filter.sharedMesh.CombineMeshes(combine);
-			combinedMesh.GetComponent<MeshRenderer>().sharedMaterial = pMat;
-		}
-
-		/// <summary>
 		/// Converts a version string (e.g., "1.2.3") into a comparable integer.
 		/// </summary>
 		public static int GetVersionInt(string version)
