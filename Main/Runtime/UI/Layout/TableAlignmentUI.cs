@@ -2,6 +2,7 @@
  * Author RadBear - nbhung71711 @gmail.com - 2019
  **/
 
+using RCore.Inspector;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -474,7 +475,7 @@ namespace RCore.UI
 				});
 
 #else
-			StartCoroutine(IEArrangeChildren(m_childrenGroup, initialPositions, finalPositions, tweenTime, onFinish));
+			StartCoroutine(IEArrangeChildren(m_childrenGroup, m_initialPositions, m_finalPositions, tweenTime, onFinish));
 #endif
 		}
 

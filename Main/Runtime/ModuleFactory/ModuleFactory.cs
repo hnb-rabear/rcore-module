@@ -11,7 +11,8 @@ namespace RCore.ModulePattern
     using UnityEngine; // For Debug.Log
 
     /// <summary>
-    /// Contains metadata about a discovered module.
+    /// Contains immutable metadata about a discovered module type,
+    /// derived from its ModuleAttribute.
     /// </summary>
     public readonly struct ModuleMetadata // Using readonly struct for immutability and value type
     {
@@ -29,6 +30,12 @@ namespace RCore.ModulePattern
         }
     }
 
+    /// <summary>
+    /// A static factory responsible for discovering and creating module instances.
+    /// It uses reflection to scan loaded assemblies for classes that implement IModule
+    /// and are decorated with the [Module] attribute. It serves as the central point
+    /// for module instantiation before they are registered with the ModuleManager.
+    /// </summary>
     public static class ModuleFactory
     {
         // Dictionary to store module metadata, keyed by the string provided in the ModuleAttribute.
@@ -36,8 +43,8 @@ namespace RCore.ModulePattern
         private static bool m_isInitialized = false;
 
         /// <summary>
-        /// Initializes the factory by scanning assemblies for module types.
-        /// This is automatically called the first time a module is requested.
+        /// Initializes the factory by scanning all loaded assemblies for types that are
+        /// decorated with the [Module] attribute. This is a lazy-initialized, one-time operation.
         /// </summary>
         private static void InitializeFactory()
         {
@@ -45,12 +52,14 @@ namespace RCore.ModulePattern
 
             m_moduleMetadataMap = new Dictionary<string, ModuleMetadata>();
 
+            // Scan all assemblies in the current AppDomain
             Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
 
             foreach (Assembly assembly in assemblies)
             {
                 try
                 {
+                    // Find all non-abstract classes that implement IModule and have the ModuleAttribute
                     var types = assembly.GetTypes()
                         .Where(t => t.IsClass && !t.IsAbstract && typeof(IModule).IsAssignableFrom(t) &&
                                     t.GetCustomAttribute<ModuleAttribute>(false) != null);
@@ -64,6 +73,7 @@ namespace RCore.ModulePattern
                             {
                                 Debug.LogWarning($"[ModuleFactory] Duplicate module key '{attribute.Key}' found for type '{type.FullName}'. Overwriting with the last one found. Original: '{m_moduleMetadataMap[attribute.Key].ModuleType.FullName}'");
                             }
+							// Store the collected metadata
                             var metadata = new ModuleMetadata(type, attribute.Key, attribute.AutoCreate, attribute.LoadOrder);
                             m_moduleMetadataMap[attribute.Key] = metadata;
                             // Reduced logging verbosity slightly
@@ -73,6 +83,7 @@ namespace RCore.ModulePattern
                 }
                 catch (ReflectionTypeLoadException ex)
                 {
+					// Handle cases where an assembly can't be fully loaded
                     Debug.LogError($"[ModuleFactory] Error loading types from assembly '{assembly.FullName}': {ex.Message}");
                     foreach (var loaderException in ex.LoaderExceptions)
                     {
@@ -89,11 +100,11 @@ namespace RCore.ModulePattern
         }
 
         /// <summary>
-        /// Creates an instance of the module associated with the given key.
-        /// IMPORTANT: This cannot instantiate MonoBehaviour types. Use AddComponent instead for those.
+        /// Creates an instance of a module associated with the given key.
+        /// IMPORTANT: This method CANNOT instantiate types that inherit from MonoBehaviour.
         /// </summary>
-        /// <param name="key">The key of the module to create (defined in ModuleAttribute).</param>
-        /// <returns>An instance of IModule, or null if the key is not found, creation fails, or the type is a MonoBehaviour.</returns>
+        /// <param name="key">The unique key of the module to create (defined in its ModuleAttribute).</param>
+        /// <returns>An instance of the module as IModule, or null if the key is not found, creation fails, or the type is a MonoBehaviour.</returns>
         public static IModule CreateModule(string key)
         {
             if (!m_isInitialized)
@@ -110,6 +121,7 @@ namespace RCore.ModulePattern
             if (m_moduleMetadataMap.TryGetValue(key, out ModuleMetadata metadata))
             {
                  // --- Check if the type is a MonoBehaviour ---
+				// Prevent instantiation of MonoBehaviours, as this must be done by Unity.
                 if (typeof(MonoBehaviour).IsAssignableFrom(metadata.ModuleType))
                 {
                     Debug.LogError($"[ModuleFactory] Cannot create module with key '{key}'. Type '{metadata.ModuleType.FullName}' is a MonoBehaviour. Use AddComponent or manual registration instead.");
@@ -119,6 +131,7 @@ namespace RCore.ModulePattern
 
                 try
                 {
+					// Create an instance of the class using its default constructor.
                     IModule moduleInstance = Activator.CreateInstance(metadata.ModuleType) as IModule;
                     if (moduleInstance != null)
                     {
@@ -146,9 +159,9 @@ namespace RCore.ModulePattern
         }
 
         /// <summary>
-        /// Gets all available module keys that have been registered.
+        /// Gets a list of all unique keys for the modules discovered by the factory.
         /// </summary>
-        /// <returns>A list of registered module keys.</returns>
+        /// <returns>A List<string> of registered module keys.</returns>
         public static List<string> GetAvailableModuleKeys()
         {
             if (!m_isInitialized)
@@ -159,11 +172,11 @@ namespace RCore.ModulePattern
         }
         
         /// <summary>
-        /// Gets metadata for a specific module key.
+        /// Tries to retrieve the metadata for a specific module key.
         /// </summary>
         /// <param name="key">The key of the module.</param>
-        /// <param name="metadata">The output metadata if found.</param>
-        /// <returns>True if metadata was found, false otherwise.</returns>
+        /// <param name="metadata">When this method returns, contains the metadata associated with the specified key, if the key is found; otherwise, the default value for the type of the metadata parameter.</param>
+        /// <returns>True if metadata was found for the key; otherwise, false.</returns>
         public static bool TryGetModuleMetadata(string key, out ModuleMetadata metadata)
         {
             if (!m_isInitialized)
@@ -176,9 +189,9 @@ namespace RCore.ModulePattern
 
         /// <summary>
         /// Gets metadata for all modules that are marked for auto-creation, sorted by their LoadOrder.
-        /// Filters out MonoBehaviour types as they cannot be auto-created by the factory.
+        /// It filters out MonoBehaviour types, as they cannot be created by this factory and must be handled manually by Unity.
         /// </summary>
-        /// <returns>A sorted list of ModuleMetadata for non-MonoBehaviour modules.</returns>
+        /// <returns>A sorted list of ModuleMetadata for modules to be auto-created.</returns>
         public static List<ModuleMetadata> GetModulesForAutoCreation()
         {
             if (!m_isInitialized)
@@ -196,7 +209,7 @@ namespace RCore.ModulePattern
                 .Where(meta => !typeof(MonoBehaviour).IsAssignableFrom(meta.ModuleType))
                 .ToList();
 
-            // Log a warning for any AutoCreate=true MonoBehaviours found
+            // Log a warning for any AutoCreate=true MonoBehaviours found, as this is a common misconfiguration.
             var monoBehaviours = autoCreateModules.Except(nonMonoBehaviours);
             foreach(var mbMeta in monoBehaviours)
             {
