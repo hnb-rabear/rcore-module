@@ -3,6 +3,7 @@
  **/
 
 using System;
+using Firebase.Installations;
 using UnityEngine;
 #if FIREBASE
 using Firebase;
@@ -14,6 +15,7 @@ namespace RCore.Service
 	public static class RFirebase
 	{
 		public static bool Initialized;
+		public static string InstallationID;
 
 		public static void Init(Action<bool> pOnFinished)
 		{
@@ -21,28 +23,37 @@ namespace RCore.Service
 				return;
 
 #if FIREBASE
-            FirebaseApp.CheckAndFixDependenciesAsync().ContinueWithOnMainThread(task =>
-            {
-                Debug.Log("Firebase Status " + task.Result);
-                if (task.Result == DependencyStatus.Available)
-                {
-                    RFirebaseAnalytics.Init();
-                    RFirebaseAuth.Init();
-                    RFirebaseStorage.Init();
-                    RFirebaseDatabase.Init();
-                    RFirebaseFirestore.Init();
-                    Initialized = true;
-                    pOnFinished.Raise(true);
-                }
-                else
-                {
-                    Initialized = false;
-                    pOnFinished.Raise(false);
-                }
-            });
+			FirebaseApp.CheckAndFixDependenciesAsync().ContinueWithOnMainThread(task =>
+			{
+				Debug.Log("Firebase Status " + task.Result);
+				if (task.Result == DependencyStatus.Available)
+				{
+					RFirebaseAnalytics.Init();
+					RFirebaseAuth.Init();
+					RFirebaseStorage.Init();
+					RFirebaseDatabase.Init();
+					RFirebaseFirestore.Init();
+					InitializeInstallation();
+					Initialized = true;
+					pOnFinished.Raise(true);
+				}
+				else
+				{
+					Initialized = false;
+					pOnFinished.Raise(false);
+				}
+			});
 #else
 			Initialized = false;
 			pOnFinished.Raise(false);
+#endif
+		}
+
+		private static async void InitializeInstallation()
+		{
+#if FIREBASE_INSTALLATION
+			var firebaseInstallations = FirebaseInstallations.GetInstance(FirebaseApp.DefaultInstance);
+			InstallationID = await firebaseInstallations.GetIdAsync();
 #endif
 		}
 	}
