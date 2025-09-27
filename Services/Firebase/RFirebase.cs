@@ -3,11 +3,14 @@
  **/
 
 using System;
-using Firebase.Installations;
 using UnityEngine;
 #if FIREBASE
 using Firebase;
 using Firebase.Extensions;
+#endif
+
+#if FIREBASE_INSTALLATION
+using Firebase.Installations;
 #endif
 
 namespace RCore.Service
