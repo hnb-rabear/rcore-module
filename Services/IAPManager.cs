@@ -9,7 +9,7 @@ using UnityEngine.Purchasing.Security;
 
 namespace RCore.Service
 {
-	public class IAPManager : MonoBehaviour, IDetailedStoreListener
+	public partial class IAPManager : MonoBehaviour, IDetailedStoreListener
 	{
 		private static IAPManager m_Instance;
 		public static IAPManager Instance
