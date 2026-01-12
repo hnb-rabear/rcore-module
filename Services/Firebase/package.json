@@ -1,0 +1,15 @@
+{
+  "name": "com.rabear.rcore.services.firebase",
+  "version": "1.0.1",
+  "displayName": "RCore Firebase Service",
+  "description": "RCore Firebase Service Wrapper",
+  "unity": "2021.3",
+  "documentationUrl": "https://github.com/hnb-rabear/RCore/tree/main/Assets/RCore/Services/Firebase",
+  "changelogUrl": "https://github.com/hnb-rabear/RCore/blob/main/Assets/RCore/Services/Firebase/CHANGELOG.md",
+  "author": {
+    "name": "HNB RaBear",
+    "email": "nbhung71711@gmail.com",
+    "url": "https://github.com/hnb-rabear"
+  },
+  "dependencies": {}
+}

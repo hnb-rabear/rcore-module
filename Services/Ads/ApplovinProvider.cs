@@ -1,12 +1,12 @@
-﻿#if ADMOB
-using GoogleMobileAds.Ump.Api;
-#endif
-using System;
+﻿using System;
 using System.Threading.Tasks;
 using UnityEngine;
 
 namespace RCore.Service
 {
+	/// <summary>
+	/// Implementation of IAdProvider for the AppLovin MAX SDK.
+	/// </summary>
 	public class ApplovinProvider : IAdProvider
 	{
 		private static ApplovinProvider m_Instance;
@@ -128,6 +128,7 @@ namespace RCore.Service
 			}
 			m_interstitialAdListener?.OnInterstitialShow(IsInterstitialReady(), placement);
 		}
+		
 		public bool IsInterstitialReady()
 		{
 #if UNITY_EDITOR
@@ -246,6 +247,7 @@ namespace RCore.Service
 				ShowMessage("Rewarded ads unavailable!");
 			}
 		}
+		
 		public bool IsRewardedVideoAvailable()
 		{
 #if UNITY_EDITOR
@@ -318,6 +320,7 @@ namespace RCore.Service
 			m_bannerDisplayed = true;
 			return true;
 		}
+		
 		public void HideBanner()
 		{
 			if (!m_bannerLoaded) return;
@@ -325,6 +328,7 @@ namespace RCore.Service
 			m_bannerAdListener.OnBannerDisplayed(false);
 			m_bannerDisplayed = false;
 		}
+		
 		public void DestroyBanner()
 		{
 			if (!m_bannerLoaded) return;
@@ -335,10 +339,12 @@ namespace RCore.Service
 			lastBannerErrInfo = null;
 			m_bannerDisplayed = false;
 		}
+		
 		public bool IsBannerReady()
 		{
 			return m_bannerLoaded;
 		}
+		
 		public bool IsBannerDisplayed()
 		{
 			return m_bannerDisplayed;

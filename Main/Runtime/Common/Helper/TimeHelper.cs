@@ -25,7 +25,14 @@ namespace RCore
 	{
 		public static readonly DateTime Epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 		private static StringBuilder m_TimeBuilder = new StringBuilder();
+		private static float m_LastRefreshTime;
+		private static int m_CachedTimestampUtc;
+		private static int m_CachedTimestampLocal;
 		private static bool m_HasInternet;
+		public static RPlayerPrefBool Cheat;
+		public static RPlayerPrefInt DayCheat;
+		public static RPlayerPrefInt HourCheat;
+		public static RPlayerPrefInt MinuteCheat;
 
 		/// <summary>
 		/// d h m s
@@ -133,6 +140,9 @@ namespace RCore
 
 			return m_TimeBuilder.ToString();
 		}
+		/// <summary>
+		/// Calculates the number of seconds remaining until midnight UTC (or server time if available).
+		/// </summary>
 		public static double GetSecondsTillMidNightUtc()
 		{
 			var utcNow = GetServerTimeUtc() ?? DateTime.UtcNow;
@@ -140,6 +150,9 @@ namespace RCore
 			return secondsTillMidNight;
 		}
 
+		/// <summary>
+		/// Calculates the number of seconds remaining until midnight from a specific date.
+		/// </summary>
 		public static double GetSecondsTillMidNight(DateTime pFrom)
 		{
 			var midNight = pFrom.Date.AddDays(1);
@@ -147,6 +160,10 @@ namespace RCore
 			return remainingTime;
 		}
 
+		/// <summary>
+		/// Calculates the number of seconds remaining until a specific target hour (0-23).
+		/// If the hour has already passed for the current day, it targets the next day.
+		/// </summary>
 		public static double GetSecondsTillTargetHour(DateTime pFrom, int targetHour) // 0 - 23
 		{
 			if (targetHour < 0 || targetHour > 23)
@@ -241,6 +258,9 @@ namespace RCore
 			return false;
 		}
 
+		/// <summary>
+		/// Calculates the total seconds until the start of a specific day of the week.
+		/// </summary>
 		public static double GetSecondsTillDayOfWeek(DayOfWeek pDayOfWeek, DateTime pNow)
 		{
 			int dayCount = pDayOfWeek.GetHashCode() - pNow.DayOfWeek.GetHashCode();
@@ -250,6 +270,9 @@ namespace RCore
 			return seconds;
 		}
 
+		/// <summary>
+		/// Calculates the total seconds until the end of a specific day of the week.
+		/// </summary>
 		public static double GetSecondsTillEndDayOfWeek(DayOfWeek pDayOfWeek, DateTime pNow)
 		{
 			int dayCount = pDayOfWeek.GetHashCode() - pNow.DayOfWeek.GetHashCode() + 1;
@@ -259,36 +282,54 @@ namespace RCore
 			return seconds;
 		}
 
+		/// <summary>
+		/// Converts a Unix timestamp (float) to a DateTime object.
+		/// </summary>
 		public static DateTime UnixTimestampToDateTime(float unixTimestamp)
 		{
 			var dtDateTime = Epoch.AddSeconds(unixTimestamp);
 			return dtDateTime;
 		}
 
+		/// <summary>
+		/// Converts a Unix timestamp (double) to a DateTime object.
+		/// </summary>
 		public static DateTime UnixTimestampToDateTime(double unixTimestamp)
 		{
 			var dtDateTime = Epoch.AddSeconds(unixTimestamp);
 			return dtDateTime;
 		}
 
+		/// <summary>
+		/// Converts a Unix timestamp (int) to a DateTime object.
+		/// </summary>
 		public static DateTime UnixTimestampToDateTime(int unixTimestamp)
 		{
 			var dtDateTime = Epoch.AddSeconds(unixTimestamp);
 			return dtDateTime;
 		}
 
+		/// <summary>
+		/// Converts a DateTime object to a Unix timestamp (long).
+		/// </summary>
 		public static long DateTimeToUnixTimestamp(DateTime value)
 		{
 			var elapsedTime = value - Epoch;
 			return (long)elapsedTime.TotalSeconds;
 		}
 
+		/// <summary>
+		/// Converts a DateTime object to a Unix timestamp (int).
+		/// </summary>
 		public static int DateTimeToUnixTimestampInt(DateTime value)
 		{
 			var elapsedTime = value - Epoch;
 			return (int)elapsedTime.TotalSeconds;
 		}
 
+		/// <summary>
+		/// Logs the current culture information for debugging purposes.
+		/// </summary>
 		public static void LogCulture()
 		{
 			var culture = CultureInfo.CurrentCulture;
@@ -301,20 +342,77 @@ namespace RCore
 				+ $"\n UniversalSortableDateTimePattern: \t {culture.DateTimeFormat.UniversalSortableDateTimePattern} \t {DateTime.Now.ToString(culture.DateTimeFormat.UniversalSortableDateTimePattern)}");
 		}
 
+		/// <summary>
+		/// Tries to get the server time in UTC. Returns null if not available.
+		/// </summary>
 		public static DateTime? GetServerTimeUtc() => WebRequestHelper.GetServerTimeUtc();
 
+		/// <summary>
+		/// Gets the current time (UTC or Local) accounting for any active cheats/offsets.
+		/// </summary>
 		public static DateTime GetNow(bool utcTime)
 		{
 			var utcNow = GetServerTimeUtc() ?? DateTime.UtcNow;
-			return utcTime ? utcNow : utcNow.ToLocalTime();
+			var date = utcTime ? utcNow : utcNow.ToLocalTime();
+			InitCheats();
+
+			if (Cheat.Value)
+			{
+				var daysOffset = DayCheat.Value;
+				var hourOffset = HourCheat.Value;
+				var minuteCheat = MinuteCheat.Value;
+				if (daysOffset > 0)
+					date = date.AddDays(daysOffset);
+				if (hourOffset > 0)
+					date = date.AddHours(hourOffset);
+				if (minuteCheat > 0)
+					date = date.AddMinutes(minuteCheat);
+			}
+			return date;
 		}
 
+		private static void InitCheats()
+		{
+			if (Cheat == null)
+			{
+				Cheat = new RPlayerPrefBool("TimeHelper.Cheat");
+				DayCheat = new RPlayerPrefInt("TimeHelper.DayCheat");
+				HourCheat = new RPlayerPrefInt("TimeHelper.HourCheat");
+				MinuteCheat = new RPlayerPrefInt("TimeHelper.MinuteCheat");
+			}
+		}
+
+		/// <summary>
+		/// Gets the current timestamp (UTC or Local) accounting for any active cheats.
+		/// optimized for performance to be called every frame
+		/// </summary>
 		public static int GetNowTimestamp(bool utcTime)
 		{
-			int timestamp = DateTimeToUnixTimestampInt(GetNow(utcTime));
-			return timestamp;
+			if (Time.unscaledTime - m_LastRefreshTime >= 1f)
+			{
+				m_LastRefreshTime = Time.unscaledTime;
+
+				var serverTs = WebRequestHelper.GetServerTimestampUtc();
+				if (serverTs.HasValue)
+					m_CachedTimestampUtc = serverTs.Value;
+				else
+					m_CachedTimestampUtc = DateTime.UtcNow.ToUnixTimestampInt();
+
+				InitCheats();
+
+				if (Cheat.Value)
+				{
+					m_CachedTimestampUtc += DayCheat.Value * 86400 + HourCheat.Value * 3600 + MinuteCheat.Value * 60;
+				}
+
+				m_CachedTimestampLocal = m_CachedTimestampUtc + (int)TimeZoneInfo.Local.GetUtcOffset(DateTime.UtcNow).TotalSeconds;
+			}
+			return utcTime ? m_CachedTimestampUtc : m_CachedTimestampLocal;
 		}
 
+		/// <summary>
+		/// Gets the ISO 8601 week number for the specified date.
+		/// </summary>
 		public static int GetCurrentWeekNumber(DateTime date)
 		{
 			// Get the ISO 8601 week number for the specified date
@@ -332,6 +430,9 @@ namespace RCore
 			return weekNumber;
 		}
 
+		/// <summary>
+		/// Calculates the number of valid seconds passed between two dates, considering only specific allowed days and hours.
+		/// </summary>
 		public static int CalcSecondsPassed(DateTime fromDate, DateTime toDate, DayOfWeek[] includeDays, int[] includeHours)
 		{
 			bool ContainHour(int hour)
@@ -348,7 +449,7 @@ namespace RCore
 						return true;
 				return false;
 			}
-			
+
 			double validSeconds = 0;
 			while (fromDate < toDate)
 			{
@@ -375,6 +476,9 @@ namespace RCore
 			return (int)validSeconds;
 		}
 
+		/// <summary>
+		/// Generates a random array of DayOfWeek values.
+		/// </summary>
 		public static DayOfWeek[] GetRandomDayOfWeeks()
 		{
 			int range = Random.Range(2, 8);
@@ -403,6 +507,9 @@ namespace RCore
 			return result;
 		}
 
+		/// <summary>
+		/// Generates a random array of hour values (0-23).
+		/// </summary>
 		public static int[] GetRandomHours(int pCount)
 		{
 			int[] allHours = new int[24];
